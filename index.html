@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ลงทะเบียนข้อมูลผู้ใช้งาน</title>
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; padding: 20px; display: flex; justify-content: center; }
+    .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+    .profile-img { width: 100px; height: 100px; border-radius: 50%; display: none; margin: 0 auto 15px auto; object-fit: cover; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: #333;}
+    input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+    button { width: 100%; padding: 12px; background-color: #00B900; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+    button:disabled { background-color: #cccccc; cursor: not-allowed; }
+    #statusMessage { margin-top: 15px; text-align: center; display: none; font-weight: bold; }
+    .text-center { text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="text-center">
+      <img id="profileImage" class="profile-img" src="" alt="Profile Image">
+      <h3 id="displayName" style="color:#555;">กำลังเตรียมระบบ...</h3>
+    </div>
+
+    <form id="myForm" onsubmit="submitForm(event)">
+      <div class="form-group">
+        <label for="name">ชื่อ</label>
+        <input type="text" id="name" required placeholder="กรอกชื่อจริง (ไม่ต้องใส่คำนำหน้า)">
+      </div>
+      <div class="form-group">
+        <label for="surname">นามสกุล</label>
+        <input type="text" id="surname" required placeholder="กรอกนามสกุล">
+      </div>
+      <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
+    </form>
+
+    <div id="statusMessage"></div>
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    let lineProfile = {};
+    
+    // 🔴 LIFF ID ของคุณ
+    const LIFF_ID = "2009229714-1R09rohG"; 
+    
+    // 🔴 วางลิงก์ GAS (ที่ลงท้ายด้วย /exec) ของคุณที่นี่
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
+
+    const displayElement = document.getElementById('displayName');
+
+    window.onload = async function() {
+      displayElement.innerText = 'กำลังเชื่อมต่อ LINE...';
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (liff.isLoggedIn()) {
+          const profile = await liff.getProfile();
+          lineProfile = {
+            userId: profile.userId,
+            displayName: profile.displayName,
+            language: liff.getLanguage() || 'th',
+            pictureUrl: profile.pictureUrl || ''
+          };
+          
+          displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
+          displayElement.style.color = '#00B900';
+          
+          if(profile.pictureUrl) {
+            document.getElementById('profileImage').src = profile.pictureUrl;
+            document.getElementById('profileImage').style.display = 'block';
+          }
+          
+          document.getElementById('submitBtn').disabled = false;
+        } else {
+          liff.login();
+        }
+      } catch (err) {
+        displayElement.innerText = 'เกิด Error: ' + err.message;
+        displayElement.style.color = 'red';
+      }
+    };
+
+    function submitForm(event) {
+      event.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const statusDiv = document.getElementById('statusMessage');
+      
+      btn.disabled = true;
+      btn.innerText = 'กำลังบันทึกข้อมูล...';
+      statusDiv.style.display = 'none';
+
+      // จัดเตรียมข้อมูล
+      const data = {
+        userId: lineProfile.userId,
+        displayName: lineProfile.displayName,
+        language: lineProfile.language,
+        pictureUrl: lineProfile.pictureUrl,
+        name: document.getElementById('name').value,
+        surname: document.getElementById('surname').value
+      };
+
+      // แปลงข้อมูลเป็นพารามิเตอร์ต่อท้าย URL
+      const params = new URLSearchParams(data).toString();
+      const finalUrl = GAS_URL + "?" + params;
+
+      // ท่าไม้ตายทะลวง CORS: ส่งแบบ GET และใช้โหมด no-cors
+      fetch(finalUrl, {
+        method: 'GET',
+        mode: 'no-cors'
+      })
+      .then(() => {
+        // เมื่อใช้ no-cors เบราว์เซอร์จะไม่อ่านค่าที่ตอบกลับมา เราจึงข้ามสเต็ปตรวจเช็คไปเลย
+        statusDiv.style.display = 'block';
+        statusDiv.innerText = 'บันทึกข้อมูลเรียบร้อยแล้ว';
+        statusDiv.style.color = '#00B900';
+        
+        // รอ 2 วินาทีแล้วปิดหน้าต่าง LIFF
+        setTimeout(() => { liff.closeWindow(); }, 2000); 
+      })
+      .catch(error => {
+        statusDiv.style.display = 'block';
+        statusDiv.innerText = 'เกิดข้อผิดพลาดในการส่งข้อมูล';
+        statusDiv.style.color = 'red';
+        btn.disabled = false;
+        btn.innerText = 'ลองใหม่อีกครั้ง';
+      });
+    }
+  </script>
+</body>
+</html>
