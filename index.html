@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
   
   <style>
-    /* 1. พื้นหลังเคลื่อนไหวแบบพาสเทล */
     body { 
       font-family: 'Kanit', sans-serif; 
       margin: 0;
@@ -16,37 +15,69 @@
       display: flex; 
       justify-content: center; 
       align-items: center; 
-      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
+      background-color: #ffffff; /* พื้นหลังหลักสีขาวสะอาด */
       color: #555;
+      overflow: hidden; /* ป้องกันหน้าจอเลื่อนซ้ายขวาเวลาคลื่นขยับ */
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* --- ส่วนของพื้นหลังคลื่น (Wave) --- */
+    .wave-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
 
-    /* 2. กล่อง Card แบบกระจกฝ้า (Glassmorphism) */
+    /* คลื่นลูกหน้า (สีเขียวสว่าง) */
+    .wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 220px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%234ade80" fill-opacity="0.85" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,170.7C960,160,1056,192,1152,208C1248,224,1344,224,1392,224L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+      background-size: 50% 100%;
+      animation: waveMove 3s linear infinite; /* เคลื่อนที่ช้าๆ ใน 3 วินาที */
+    }
+
+    /* คลื่นลูกหลัง (สีเขียวเข้มขึ้นนิดนึงและโปร่งแสง) */
+    .wave2 {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 250px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%2322c55e" fill-opacity="0.3" d="M0,128L48,144C96,160,192,192,288,197.3C384,203,480,181,576,170.7C672,160,768,160,864,165.3C960,171,1056,181,1152,192C1248,203,1344,213,1392,218.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+      background-size: 50% 100%;
+      animation: waveMove 5s linear infinite; /* เคลื่อนที่ช้ากว่าเพื่อให้มีมิติ */
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    /* --------------------------------- */
+
     .container { 
       background: rgba(255, 255, 255, 0.85); 
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       padding: 40px 30px; 
       border-radius: 20px; 
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); 
+      box-shadow: 0 10px 40px rgba(34, 197, 94, 0.15); 
       width: 90%; 
       max-width: 380px; 
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       transition: transform 0.3s ease;
+      z-index: 1; /* ให้อยู่เหนือคลื่น */
     }
 
     .container:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
     }
 
-    /* รูปโปรไฟล์ */
     .profile-wrapper {
       position: relative;
       width: 110px;
@@ -59,32 +90,30 @@
       height: 100%; 
       border-radius: 50%; 
       object-fit: cover; 
-      border: 4px solid white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: none; /* ซ่อนก่อนโหลดเสร็จ */
+      border: 4px solid #fff;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.25);
+      display: none; 
     }
 
-    /* Loading placeholder สำหรับรูป */
     .profile-placeholder {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: #eee;
+      background: #f0fdf4;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 30px;
-      color: #ccc;
+      color: #22c55e;
     }
 
     h3 {
       margin: 0 0 20px 0;
       font-weight: 600;
-      color: #444;
+      color: #16a34a; /* สีเขียวเข้ม */
       font-size: 1.2rem;
     }
 
-    /* ฟอร์ม input */
     .form-group { 
       margin-bottom: 20px; 
       text-align: left;
@@ -103,25 +132,24 @@
       width: 100%; 
       padding: 12px 15px; 
       box-sizing: border-box; 
-      border: 2px solid #eee; 
-      border-radius: 15px; /* มุมมน */
+      border: 2px solid #e5e7eb; 
+      border-radius: 15px; 
       font-size: 16px; 
       font-family: 'Kanit', sans-serif;
       transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.9);
+      background: #fff;
       outline: none;
     }
 
     input[type="text"]:focus {
-      border-color: #a18cd1;
-      box-shadow: 0 0 8px rgba(161, 140, 209, 0.2);
+      border-color: #4ade80;
+      box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
     }
 
-    /* ปุ่มกด */
     button { 
       width: 100%; 
       padding: 14px; 
-      background: linear-gradient(45deg, #a18cd1, #fbc2eb);
+      background: linear-gradient(45deg, #22c55e, #4ade80); /* ไล่สีเขียว */
       color: white; 
       border: none; 
       border-radius: 15px; 
@@ -130,27 +158,27 @@
       font-weight: 600; 
       font-family: 'Kanit', sans-serif;
       margin-top: 15px; 
-      box-shadow: 0 4px 15px rgba(161, 140, 209, 0.4);
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
       transition: all 0.3s ease;
     }
 
     button:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(161, 140, 209, 0.6);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
     }
 
     button:disabled { 
-      background: #ddd; 
-      color: #999;
+      background: #d1d5db; 
+      color: #6b7280;
       cursor: not-allowed; 
       box-shadow: none;
       transform: none;
     }
 
-    /* สถานะสำเร็จ */
+    /* สไตล์ปุ่มตอนบันทึกสำเร็จ */
     .success-btn {
-      background: linear-gradient(45deg, #56ab2f, #a8e063) !important;
-      box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4) !important;
+      background: linear-gradient(45deg, #16a34a, #22c55e) !important;
+      box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4) !important;
     }
 
     #statusMessage { 
@@ -165,6 +193,11 @@
 </head>
 <body>
 
+  <div class="wave-container">
+    <div class="wave2"></div>
+    <div class="wave"></div>
+  </div>
+
   <div class="container">
     <div class="text-center">
       
@@ -172,7 +205,7 @@
         <div id="loadingPlaceholder" class="profile-placeholder">
           <span>●●●</span>
         </div>
-        <img id="profileImage" class="profile-img" src="" alt="Profile">
+        <img id="profileImage" class="profile-img" src="" alt="Profile Image">
       </div>
       
       <h3 id="displayName">กำลังเชื่อมต่อ LINE...</h3>
@@ -180,12 +213,12 @@
 
     <form id="myForm" onsubmit="submitForm(event)">
       <div class="form-group">
-        <label for="name">ชื่อจริง</label>
-        <input type="text" id="name" required placeholder="ระบุชื่อจริงของคุณ">
+        <label for="name">ชื่อ</label>
+        <input type="text" id="name" required placeholder="กรอกชื่อจริง (ไม่ต้องใส่คำนำหน้า)">
       </div>
       <div class="form-group">
         <label for="surname">นามสกุล</label>
-        <input type="text" id="surname" required placeholder="ระบุนามสกุลของคุณ">
+        <input type="text" id="surname" required placeholder="กรอกนามสกุล">
       </div>
       <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
     </form>
@@ -197,10 +230,10 @@
   <script>
     let lineProfile = {};
     
-    // 🔴 1. ใส่ LIFF ID ของคุณ
+    // LIFF ID เดิมของคุณ
     const LIFF_ID = "2009229714-1R09rohG"; 
     
-    // 🔴 2. ใส่ GAS URL ที่ลงท้ายด้วย /exec ของคุณ
+    // อัปเดต GAS_URL อันใหม่เรียบร้อยแล้วครับ
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     const displayElement = document.getElementById('displayName');
@@ -220,17 +253,16 @@
           };
           
           displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
-          displayElement.style.color = '#a18cd1'; // สีม่วงพาสเทล
+          displayElement.style.color = '#16a34a'; 
           
           if(profile.pictureUrl) {
             profileImg.src = profile.pictureUrl;
             profileImg.onload = function() {
-                // โหลดรูปเสร็จค่อยโชว์
+                // เอารูปมาแทนที่จุดไข่ปลาเมื่อโหลดเสร็จ
                 profileImg.style.display = 'block';
                 placeholder.style.display = 'none';
             }
           } else {
-             // ถ้าไม่มีรูป ให้โชว์ placeholder ต่อไปหรือใส่รูป default
              placeholder.innerHTML = "<span>☺</span>";
           }
           
@@ -249,10 +281,6 @@
       const btn = document.getElementById('submitBtn');
       const statusDiv = document.getElementById('statusMessage');
       
-      // เก็บข้อความเดิมไว้เผื่อ Error
-      const originalBtnText = btn.innerText;
-
-      // เปลี่ยนสถานะปุ่มเป็นกำลังโหลด
       btn.disabled = true;
       btn.innerText = 'กำลังบันทึกข้อมูล... ⏳';
       statusDiv.style.display = 'none';
@@ -274,24 +302,22 @@
         mode: 'no-cors'
       })
       .then(() => {
-        // ✅ 3. แก้ไขจุดที่ปุ่มค้าง: เปลี่ยนปุ่มเป็นสีเขียวและบอกว่าสำเร็จ
+        // เปลี่ยนปุ่มเป็นสีเขียวเข้มและแจ้งสถานะสำเร็จ
         btn.innerText = 'บันทึกเรียบร้อย ✅';
-        btn.classList.add('success-btn'); // เพิ่ม class สีเขียว
+        btn.classList.add('success-btn'); 
         
         statusDiv.style.display = 'block';
-        statusDiv.innerText = 'ระบบกำลังปิดหน้าต่างอัตโนมัติ...';
-        statusDiv.style.color = '#56ab2f';
+        statusDiv.innerText = 'ระบบจะปิดหน้าต่างอัตโนมัติ...';
+        statusDiv.style.color = '#16a34a';
         
-        // รอ 2.5 วินาทีแล้วปิดหน้าต่าง
         setTimeout(() => { liff.closeWindow(); }, 2500); 
       })
       .catch(error => {
-        // กรณี Error ให้ปุ่มกลับมาเป็นปกติเพื่อให้กดใหม่ได้
         btn.disabled = false;
         btn.innerText = 'ลองใหม่อีกครั้ง';
         
         statusDiv.style.display = 'block';
-        statusDiv.innerText = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
+        statusDiv.innerText = 'เกิดข้อผิดพลาดในการส่งข้อมูล';
         statusDiv.style.color = 'red';
       });
     }
