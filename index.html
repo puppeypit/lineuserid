@@ -137,24 +137,25 @@
       box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
     }
 
-    /* 🔴 เพิ่ม CSS Skeleton Animation สำหรับช่อง Input */
+    /* 🔴 CSS Skeleton Animation ฉบับสีเข้มเห็นชัด */
     .skeleton-input {
-      background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%) !important;
+      background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%) !important;
       background-size: 200% 100% !important;
-      animation: shimmer 1.5s infinite linear !important;
+      animation: shimmer 1.5s infinite ease-in-out !important;
       color: transparent !important;
-      border-color: #e5e7eb !important;
-      pointer-events: none; /* ป้องกันการคลิก */
+      border: 2px solid #e2e8f0 !important;
+      pointer-events: none;
+      user-select: none;
     }
+    
     .skeleton-input::placeholder {
-      color: transparent !important; /* ซ่อน Placeholder ระหว่างโหลด */
+      color: transparent !important; 
     }
 
     @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
-    /* ------------------------------------------- */
 
     button { 
       width: 100%; 
@@ -247,7 +248,7 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG"; 
     
-    // ใส่ลิงก์ GAS ของคุณตรงนี้
+    // ⚠️ ลิงก์ GAS ของคุณ (อย่าลืมตรวจสอบให้มั่นใจว่าเป็นเวอร์ชันล่าสุดที่ Deploy)
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     const displayElement = document.getElementById('displayName');
@@ -297,7 +298,7 @@
             });
             
           } else {
-            // 🟢 หากยังไม่มีข้อมูล
+            // 🟢 หากยังไม่มีข้อมูล (ให้กรอกฟอร์ม)
             Swal.fire({
               icon: 'info',
               title: 'คุณยังไม่ได้ลงทะเบียน',
@@ -306,7 +307,7 @@
               confirmButtonColor: '#22c55e'
             });
 
-            // 🔴 ปลดล็อคช่อง Input และเอา Animation ออก
+            // 🔴 ปลดล็อคช่อง Input และเอาแอนิเมชัน Skeleton ออก
             document.getElementById('name').classList.remove('skeleton-input');
             document.getElementById('name').disabled = false;
             document.getElementById('surname').classList.remove('skeleton-input');
@@ -345,7 +346,7 @@
       btn.innerText = 'กำลังบันทึกข้อมูล... ⏳';
       statusDiv.style.display = 'none';
 
-      // ล็อคช่อง Input กลับระหว่างกำลังส่งข้อมูล
+      // ล็อคช่อง Input ชั่วคราวระหว่างส่งข้อมูล
       document.getElementById('name').disabled = true;
       document.getElementById('surname').disabled = true;
 
@@ -384,7 +385,7 @@
         btn.disabled = false;
         btn.innerText = 'ลองใหม่อีกครั้ง';
         
-        // ปลดล็อคช่อง Input ให้แก้ไขได้หากเกิด Error
+        // ปลดล็อคช่อง Input ให้แก้ไขข้อมูลได้หากเกิด Error
         document.getElementById('name').disabled = false;
         document.getElementById('surname').disabled = false;
 
