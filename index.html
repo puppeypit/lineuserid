@@ -137,6 +137,25 @@
       box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
     }
 
+    /* 🔴 เพิ่ม CSS Skeleton Animation สำหรับช่อง Input */
+    .skeleton-input {
+      background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%) !important;
+      background-size: 200% 100% !important;
+      animation: shimmer 1.5s infinite linear !important;
+      color: transparent !important;
+      border-color: #e5e7eb !important;
+      pointer-events: none; /* ป้องกันการคลิก */
+    }
+    .skeleton-input::placeholder {
+      color: transparent !important; /* ซ่อน Placeholder ระหว่างโหลด */
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    /* ------------------------------------------- */
+
     button { 
       width: 100%; 
       padding: 14px; 
@@ -211,11 +230,11 @@
     <form id="myForm" onsubmit="submitForm(event)">
       <div class="form-group">
         <label for="name">ชื่อ</label>
-        <input type="text" id="name" required placeholder="กรอกชื่อจริง (ไม่ต้องใส่คำนำหน้า)">
+        <input type="text" id="name" class="skeleton-input" disabled required placeholder="กรอกชื่อจริง (ไม่ต้องใส่คำนำหน้า)">
       </div>
       <div class="form-group">
         <label for="surname">นามสกุล</label>
-        <input type="text" id="surname" required placeholder="กรอกนามสกุล">
+        <input type="text" id="surname" class="skeleton-input" disabled required placeholder="กรอกนามสกุล">
       </div>
       <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
     </form>
@@ -235,16 +254,14 @@
     const profileImg = document.getElementById('profileImage');
     const placeholder = document.getElementById('loadingPlaceholder');
 
-    // 🌟 ฟังก์ชันใหม่: ใช้คำสั่งของ LIFF เพื่อบังคับเปิดหน้าเว็บ
+    // ฟังก์ชันเปิดหน้าเว็บ
     function goToWebsite() {
       if (liff.isInClient()) {
-        // หากเปิดในแอป LINE ให้ใช้ลอจิกของ liff
         liff.openWindow({
           url: "https://doacoop.com/",
-          external: false // false = เปิดในหน้าต่างเว็บของ LINE, true = เปิดใน Safari/Chrome
+          external: false 
         });
       } else {
-        // หากเปิดผ่านเบราว์เซอร์ปกติ
         window.location.replace("https://doacoop.com/");
       }
     }
@@ -276,10 +293,11 @@
               timer: 2000,
               showConfirmButton: false
             }).then(() => {
-              goToWebsite(); // 🔴 เรียกใช้ฟังก์ชันเปิดหน้าเว็บ
+              goToWebsite(); 
             });
             
           } else {
+            // 🟢 หากยังไม่มีข้อมูล
             Swal.fire({
               icon: 'info',
               title: 'คุณยังไม่ได้ลงทะเบียน',
@@ -287,6 +305,12 @@
               confirmButtonText: 'ตกลง',
               confirmButtonColor: '#22c55e'
             });
+
+            // 🔴 ปลดล็อคช่อง Input และเอา Animation ออก
+            document.getElementById('name').classList.remove('skeleton-input');
+            document.getElementById('name').disabled = false;
+            document.getElementById('surname').classList.remove('skeleton-input');
+            document.getElementById('surname').disabled = false;
 
             displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
             displayElement.style.color = '#16a34a'; 
@@ -321,6 +345,10 @@
       btn.innerText = 'กำลังบันทึกข้อมูล... ⏳';
       statusDiv.style.display = 'none';
 
+      // ล็อคช่อง Input กลับระหว่างกำลังส่งข้อมูล
+      document.getElementById('name').disabled = true;
+      document.getElementById('surname').disabled = true;
+
       const data = {
         userId: lineProfile.userId,
         displayName: lineProfile.displayName,
@@ -345,7 +373,7 @@
           statusDiv.style.color = '#16a34a';
           
           setTimeout(() => { 
-             goToWebsite(); // 🔴 เรียกใช้ฟังก์ชันเปิดหน้าเว็บ
+             goToWebsite(); 
           }, 1500); 
 
         } else {
@@ -355,6 +383,11 @@
       .catch(error => {
         btn.disabled = false;
         btn.innerText = 'ลองใหม่อีกครั้ง';
+        
+        // ปลดล็อคช่อง Input ให้แก้ไขได้หากเกิด Error
+        document.getElementById('name').disabled = false;
+        document.getElementById('surname').disabled = false;
+
         statusDiv.style.display = 'block';
         statusDiv.innerText = 'ข้อผิดพลาด: ' + error.message;
         statusDiv.style.color = 'red';
