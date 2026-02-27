@@ -21,7 +21,6 @@
       overflow: hidden; 
     }
 
-    /* --- ส่วนของพื้นหลังคลื่น (SVG Gentle Wave) --- */
     .wave-container { 
       position: fixed;
       bottom: 0; 
@@ -50,7 +49,6 @@
       0% { transform: translate3d(-90px,0,0); }
       100% { transform: translate3d(85px,0,0); }
     }
-    /* --------------------------------- */
 
     .container { 
       background: rgba(255, 255, 255, 0.85); 
@@ -228,15 +226,28 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     let lineProfile = {};
-    
     const LIFF_ID = "2009229714-1R09rohG"; 
     
-    // ⚠️ นำ URL ที่ได้จากการ Deploy รอบล่าสุดมาใส่ตรงนี้นะครับ ⚠️
+    // ใส่ลิงก์ GAS ของคุณตรงนี้
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     const displayElement = document.getElementById('displayName');
     const profileImg = document.getElementById('profileImage');
     const placeholder = document.getElementById('loadingPlaceholder');
+
+    // 🌟 ฟังก์ชันใหม่: ใช้คำสั่งของ LIFF เพื่อบังคับเปิดหน้าเว็บ
+    function goToWebsite() {
+      if (liff.isInClient()) {
+        // หากเปิดในแอป LINE ให้ใช้ลอจิกของ liff
+        liff.openWindow({
+          url: "https://doacoop.com/",
+          external: false // false = เปิดในหน้าต่างเว็บของ LINE, true = เปิดใน Safari/Chrome
+        });
+      } else {
+        // หากเปิดผ่านเบราว์เซอร์ปกติ
+        window.location.replace("https://doacoop.com/");
+      }
+    }
 
     window.onload = async function() {
       try {
@@ -250,19 +261,14 @@
             pictureUrl: profile.pictureUrl || ''
           };
           
-          // 1. ระหว่างรอตรวจสอบข้อมูล ให้แสดงสถานะโหลด
           displayElement.innerText = 'กำลังตรวจสอบข้อมูล...';
-          displayElement.style.color = '#eab308'; // สีเหลือง
+          displayElement.style.color = '#eab308'; 
           
-          // 2. เรียกไปที่ GAS เพื่อตรวจสอบว่ามี userId นี้ใน Sheet หรือยัง
           const checkUrl = `${GAS_URL}?action=check&userId=${profile.userId}`;
-          
-          // เปลี่ยน fetch แบบปกติ ไม่ติด no-cors
           const response = await fetch(checkUrl);
           const result = await response.json();
           
           if (result.exists) {
-            // 🔴 หากมีข้อมูลแล้ว: แจ้งเตือนและ Redirect ไปที่เว็บเป้าหมาย
             Swal.fire({
               icon: 'success',
               title: 'เข้าสู่ระบบสำเร็จ',
@@ -270,11 +276,10 @@
               timer: 2000,
               showConfirmButton: false
             }).then(() => {
-              window.location.href = "https://doacoop.com/"; 
+              goToWebsite(); // 🔴 เรียกใช้ฟังก์ชันเปิดหน้าเว็บ
             });
             
           } else {
-            // 🟢 หากยังไม่มีข้อมูล: แจ้งเตือนให้ลงทะเบียน 
             Swal.fire({
               icon: 'info',
               title: 'คุณยังไม่ได้ลงทะเบียน',
@@ -283,7 +288,6 @@
               confirmButtonColor: '#22c55e'
             });
 
-            // แสดงผลรูปโปรไฟล์และชื่อเพื่อให้ผู้ใช้กรอกข้อมูลต่อ
             displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
             displayElement.style.color = '#16a34a'; 
             
@@ -296,8 +300,6 @@
             } else {
                placeholder.innerHTML = "<span>☺</span>";
             }
-            
-            // เปิดให้กดปุ่ม submit ได้
             document.getElementById('submitBtn').disabled = false;
           }
 
@@ -331,7 +333,6 @@
       const params = new URLSearchParams(data).toString();
       const finalUrl = GAS_URL + "?" + params;
 
-      // ลบ mode: 'no-cors' ออก เพื่อให้รับค่า JSON กลับมาอ่านได้
       fetch(finalUrl)
       .then(response => response.json())
       .then(result => {
@@ -343,9 +344,8 @@
           statusDiv.innerText = 'กำลังพาท่านเข้าสู่เว็บไซต์...';
           statusDiv.style.color = '#16a34a';
           
-          // เปลี่ยนจาก closeWindow เป็นเด้งไปที่หน้าเว็บเลยเมื่อบันทึกเสร็จ
           setTimeout(() => { 
-             window.location.href = "https://doacoop.com/"; 
+             goToWebsite(); // 🔴 เรียกใช้ฟังก์ชันเปิดหน้าเว็บ
           }, 1500); 
 
         } else {
@@ -355,7 +355,6 @@
       .catch(error => {
         btn.disabled = false;
         btn.innerText = 'ลองใหม่อีกครั้ง';
-        
         statusDiv.style.display = 'block';
         statusDiv.innerText = 'ข้อผิดพลาด: ' + error.message;
         statusDiv.style.color = 'red';
