@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ลงทะเบียนสมาชิก</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     body { 
@@ -22,7 +23,7 @@
 
     /* --- ส่วนของพื้นหลังคลื่น (SVG Gentle Wave) --- */
     .wave-container { 
-      position: fixed; /* ใช้ fixed เพื่อให้ติดขอบล่างเสมอ */
+      position: fixed;
       bottom: 0; 
       left: 0; 
       width: 100%; 
@@ -37,7 +38,6 @@
       min-height: 100px; 
     }
     
-    /* ควบคุมการเคลื่อนที่ของคลื่นแต่ละชั้น */
     .parallax > use {
       animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
     }
@@ -64,7 +64,7 @@
       border: 1px solid rgba(255, 255, 255, 0.8);
       transition: transform 0.3s ease;
       z-index: 1; 
-      margin-bottom: 10vh; /* ดันกล่องขึ้นนิดนึงไม่ให้บังคลื่น */
+      margin-bottom: 10vh; 
     }
 
     .container:hover {
@@ -207,7 +207,7 @@
         </div>
         <img id="profileImage" class="profile-img" src="" alt="Profile Image">
       </div>
-      <h3 id="displayName">กำลังเชื่อมต่อ LINE...</h3>
+      <h3 id="displayName">กำลังเชื่อมต่อระบบ...</h3>
     </div>
 
     <form id="myForm" onsubmit="submitForm(event)">
@@ -230,6 +230,8 @@
     let lineProfile = {};
     
     const LIFF_ID = "2009229714-1R09rohG"; 
+    
+    // ⚠️ นำ URL ที่ได้จากการ Deploy รอบล่าสุดมาใส่ตรงนี้นะครับ ⚠️
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     const displayElement = document.getElementById('displayName');
@@ -248,20 +250,57 @@
             pictureUrl: profile.pictureUrl || ''
           };
           
-          displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
-          displayElement.style.color = '#16a34a'; 
+          // 1. ระหว่างรอตรวจสอบข้อมูล ให้แสดงสถานะโหลด
+          displayElement.innerText = 'กำลังตรวจสอบข้อมูล...';
+          displayElement.style.color = '#eab308'; // สีเหลือง
           
-          if(profile.pictureUrl) {
-            profileImg.src = profile.pictureUrl;
-            profileImg.onload = function() {
-                profileImg.style.display = 'block';
-                placeholder.style.display = 'none';
-            }
+          // 2. เรียกไปที่ GAS เพื่อตรวจสอบว่ามี userId นี้ใน Sheet หรือยัง
+          const checkUrl = `${GAS_URL}?action=check&userId=${profile.userId}`;
+          
+          // เปลี่ยน fetch แบบปกติ ไม่ติด no-cors
+          const response = await fetch(checkUrl);
+          const result = await response.json();
+          
+          if (result.exists) {
+            // 🔴 หากมีข้อมูลแล้ว: แจ้งเตือนและ Redirect ไปที่เว็บเป้าหมาย
+            Swal.fire({
+              icon: 'success',
+              title: 'เข้าสู่ระบบสำเร็จ',
+              text: 'กำลังพาท่านเข้าสู่เว็บไซต์หลัก...',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = "https://doacoop.com/"; 
+            });
+            
           } else {
-             placeholder.innerHTML = "<span>☺</span>";
+            // 🟢 หากยังไม่มีข้อมูล: แจ้งเตือนให้ลงทะเบียน 
+            Swal.fire({
+              icon: 'info',
+              title: 'คุณยังไม่ได้ลงทะเบียน',
+              text: 'กรุณากรอกชื่อและนามสกุลเพื่อลงทะเบียนก่อนเข้าใช้งานครับ',
+              confirmButtonText: 'ตกลง',
+              confirmButtonColor: '#22c55e'
+            });
+
+            // แสดงผลรูปโปรไฟล์และชื่อเพื่อให้ผู้ใช้กรอกข้อมูลต่อ
+            displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
+            displayElement.style.color = '#16a34a'; 
+            
+            if(profile.pictureUrl) {
+              profileImg.src = profile.pictureUrl;
+              profileImg.onload = function() {
+                  profileImg.style.display = 'block';
+                  placeholder.style.display = 'none';
+              }
+            } else {
+               placeholder.innerHTML = "<span>☺</span>";
+            }
+            
+            // เปิดให้กดปุ่ม submit ได้
+            document.getElementById('submitBtn').disabled = false;
           }
-          
-          document.getElementById('submitBtn').disabled = false;
+
         } else {
           liff.login();
         }
@@ -292,26 +331,33 @@
       const params = new URLSearchParams(data).toString();
       const finalUrl = GAS_URL + "?" + params;
 
-      fetch(finalUrl, {
-        method: 'GET',
-        mode: 'no-cors'
-      })
-      .then(() => {
-        btn.innerText = 'บันทึกเรียบร้อย ✅';
-        btn.classList.add('success-btn'); 
-        
-        statusDiv.style.display = 'block';
-        statusDiv.innerText = 'ระบบจะปิดหน้าต่างอัตโนมัติ...';
-        statusDiv.style.color = '#16a34a';
-        
-        setTimeout(() => { liff.closeWindow(); }, 2500); 
+      // ลบ mode: 'no-cors' ออก เพื่อให้รับค่า JSON กลับมาอ่านได้
+      fetch(finalUrl)
+      .then(response => response.json())
+      .then(result => {
+        if(result.success) {
+          btn.innerText = 'บันทึกเรียบร้อย ✅';
+          btn.classList.add('success-btn'); 
+          
+          statusDiv.style.display = 'block';
+          statusDiv.innerText = 'กำลังพาท่านเข้าสู่เว็บไซต์...';
+          statusDiv.style.color = '#16a34a';
+          
+          // เปลี่ยนจาก closeWindow เป็นเด้งไปที่หน้าเว็บเลยเมื่อบันทึกเสร็จ
+          setTimeout(() => { 
+             window.location.href = "https://doacoop.com/"; 
+          }, 1500); 
+
+        } else {
+          throw new Error(result.message);
+        }
       })
       .catch(error => {
         btn.disabled = false;
         btn.innerText = 'ลองใหม่อีกครั้ง';
         
         statusDiv.style.display = 'block';
-        statusDiv.innerText = 'เกิดข้อผิดพลาดในการส่งข้อมูล';
+        statusDiv.innerText = 'ข้อผิดพลาด: ' + error.message;
         statusDiv.style.color = 'red';
       });
     }
