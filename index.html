@@ -137,7 +137,7 @@
       box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
     }
 
-    /* 🔴 CSS Skeleton Animation ฉบับสีเข้มเห็นชัด */
+    /* CSS Skeleton Animation สำหรับตอนตรวจสอบข้อมูล */
     .skeleton-input {
       background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%) !important;
       background-size: 200% 100% !important;
@@ -191,13 +191,6 @@
       box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4) !important;
     }
 
-    #statusMessage { 
-      margin-top: 15px; 
-      text-align: center; 
-      display: none; 
-      font-size: 0.9rem;
-    }
-    
     .text-center { text-align: center; }
   </style>
 </head>
@@ -239,8 +232,6 @@
       </div>
       <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
     </form>
-
-    <div id="statusMessage"></div>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -248,14 +239,13 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG"; 
     
-    // ⚠️ ลิงก์ GAS ของคุณ (อย่าลืมตรวจสอบให้มั่นใจว่าเป็นเวอร์ชันล่าสุดที่ Deploy)
+    // ⚠️ ลิงก์ GAS ของคุณ
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     const displayElement = document.getElementById('displayName');
     const profileImg = document.getElementById('profileImage');
     const placeholder = document.getElementById('loadingPlaceholder');
 
-    // ฟังก์ชันเปิดหน้าเว็บ
     function goToWebsite() {
       if (liff.isInClient()) {
         liff.openWindow({
@@ -298,7 +288,6 @@
             });
             
           } else {
-            // 🟢 หากยังไม่มีข้อมูล (ให้กรอกฟอร์ม)
             Swal.fire({
               icon: 'info',
               title: 'คุณยังไม่ได้ลงทะเบียน',
@@ -307,7 +296,6 @@
               confirmButtonColor: '#22c55e'
             });
 
-            // 🔴 ปลดล็อคช่อง Input และเอาแอนิเมชัน Skeleton ออก
             document.getElementById('name').classList.remove('skeleton-input');
             document.getElementById('name').disabled = false;
             document.getElementById('surname').classList.remove('skeleton-input');
@@ -340,15 +328,25 @@
     function submitForm(event) {
       event.preventDefault();
       const btn = document.getElementById('submitBtn');
-      const statusDiv = document.getElementById('statusMessage');
       
       btn.disabled = true;
-      btn.innerText = 'กำลังบันทึกข้อมูล... ⏳';
-      statusDiv.style.display = 'none';
+      btn.innerText = 'กำลังบันทึกข้อมูล...';
 
       // ล็อคช่อง Input ชั่วคราวระหว่างส่งข้อมูล
       document.getElementById('name').disabled = true;
       document.getElementById('surname').disabled = true;
+
+      // 🔴 เพิ่ม Animation โหลดตอนกำลังบันทึก (บล็อกหน้าจอไว้)
+      Swal.fire({
+        title: 'กำลังบันทึกข้อมูล',
+        html: 'ระบบกำลังนำข้อมูลลงฐานข้อมูล กรุณารอสักครู่...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
       const data = {
         userId: lineProfile.userId,
@@ -369,13 +367,16 @@
           btn.innerText = 'บันทึกเรียบร้อย ✅';
           btn.classList.add('success-btn'); 
           
-          statusDiv.style.display = 'block';
-          statusDiv.innerText = 'กำลังพาท่านเข้าสู่เว็บไซต์...';
-          statusDiv.style.color = '#16a34a';
-          
-          setTimeout(() => { 
+          // 🔴 เมื่อสำเร็จ ให้เปลี่ยนแอนิเมชันเป็นเครื่องหมายถูก
+          Swal.fire({
+            icon: 'success',
+            title: 'บันทึกข้อมูลสำเร็จ!',
+            text: 'กำลังพาท่านเข้าสู่เว็บไซต์หลัก...',
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => {
              goToWebsite(); 
-          }, 1500); 
+          });
 
         } else {
           throw new Error(result.message);
@@ -389,9 +390,14 @@
         document.getElementById('name').disabled = false;
         document.getElementById('surname').disabled = false;
 
-        statusDiv.style.display = 'block';
-        statusDiv.innerText = 'ข้อผิดพลาด: ' + error.message;
-        statusDiv.style.color = 'red';
+        // 🔴 หากเกิด Error จะเปลี่ยนแอนิเมชันแจ้งเตือนสีแดง
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: error.message || 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#ef4444'
+        });
       });
     }
   </script>
