@@ -77,8 +77,6 @@
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
-    
-    // 🌟 เปลี่ยน API_URL เป็นลิงก์ใหม่แล้ว
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     window.onload = async function() {
@@ -109,7 +107,7 @@
               timer: 2000,
               showConfirmButton: false
             }).then(() => {
-               window.location.replace(result.redirectUrl);
+               window.top.location.replace(result.redirectUrl);
             });
           } else {
             const inputs = ['name', 'surname', 'phone'];
@@ -174,7 +172,7 @@
             timer: 2000,
             showConfirmButton: false
           }).then(() => {
-              window.location.replace(result.redirectUrl); 
+              window.top.location.replace(result.redirectUrl); 
           });
         } else {
           throw new Error(result.error);
