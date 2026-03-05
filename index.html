@@ -6,7 +6,6 @@
   <title>ลงทะเบียนสมาชิก</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { font-family: 'Kanit', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #ffffff; }
     .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 380px; text-align: center; }
@@ -27,22 +26,40 @@
     </form>
   </div>
 
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
+    // 🌟 ดึงค่าเป้าหมายจาก URL (ว่าต้องการให้ส่งกลับไปหน้าไหน)
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetApp = urlParams.get('target');
+    
+    // ⚠️ นำ Web App URL ของปฏิทินมาใส่ตรงนี้
+    const CALENDAR_URL = "https://script.google.com/macros/s/AKfycbz_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec"; 
+
     window.onload = async function() {
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) { liff.login(); } 
-        else {
+        if (!liff.isLoggedIn()) { 
+            // ใส่ redirectUri เพื่อให้พารามิเตอร์ ?target=calendar ไม่หายไปตอนล็อกอิน
+            liff.login({ redirectUri: window.location.href }); 
+        } else {
           const profile = await liff.getProfile();
           lineProfile = { userId: profile.userId, displayName: profile.displayName, language: liff.getLanguage(), pictureUrl: profile.pictureUrl };
           const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
           const result = await response.json();
-          if (result.isRegistered) { window.top.location.replace(result.redirectUrl + "?uid=" + profile.userId); } 
-          else {
+          
+          if (result.isRegistered) { 
+             // ถ้าระบุว่ามาจาก Calendar ให้ตีกลับไปหน้า Calendar
+             if (targetApp === 'calendar') {
+                 window.top.location.replace(CALENDAR_URL + "?uid=" + profile.userId);
+             } else {
+                 // ถ้าไม่ได้ระบุ ก็ไปหน้า Dashboard หลักตามปกติ
+                 window.top.location.replace(result.redirectUrl + "?uid=" + profile.userId); 
+             }
+          } else {
             ['name', 'surname', 'phone'].forEach(id => { document.getElementById(id).disabled = false; });
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('displayName').innerText = profile.displayName;
@@ -64,7 +81,13 @@
         const result = await res.json();
         if(result.success) {
           Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false })
-          .then(() => window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId));
+          .then(() => {
+              if (targetApp === 'calendar') {
+                 window.top.location.replace(CALENDAR_URL + "?uid=" + lineProfile.userId);
+              } else {
+                 window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId);
+              }
+          });
         }
       } catch (e) { console.error(e); }
     }
