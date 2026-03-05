@@ -107,7 +107,8 @@
               timer: 2000,
               showConfirmButton: false
             }).then(() => {
-               window.top.location.replace(result.redirectUrl);
+               // 🌟 เติม ?uid= ต่อท้าย URL เพื่อส่งไปที่หน้า Dashboard
+               window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId);
             });
           } else {
             const inputs = ['name', 'surname', 'phone'];
@@ -172,7 +173,8 @@
             timer: 2000,
             showConfirmButton: false
           }).then(() => {
-              window.top.location.replace(result.redirectUrl); 
+              // 🌟 เติม ?uid= ต่อท้าย URL เพื่อส่งไปที่หน้า Dashboard
+              window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId); 
           });
         } else {
           throw new Error(result.error);
