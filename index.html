@@ -6,187 +6,74 @@
   <title>ลงทะเบียนสมาชิก</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    body { font-family: 'Kanit', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #ffffff; color: #555; overflow: hidden; }
-    .wave-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 30vh; z-index: -1; pointer-events: none; }
-    .waves { position: absolute; width: 100%; height: 100%; min-height: 100px; }
-    .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
-    .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
-    .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
-    .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
-    .parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
-    @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
-    .container { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(34, 197, 94, 0.15); width: 90%; max-width: 380px; border: 1px solid rgba(255, 255, 255, 0.8); z-index: 1; margin-bottom: 5vh; max-height: 90vh; overflow-y: auto;}
-    .profile-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 15px auto; }
-    .profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.25); display: none; }
-    .profile-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #f0fdf4; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #22c55e; }
-    h3 { margin: 0 0 15px 0; font-weight: 600; color: #16a34a; font-size: 1.1rem; }
-    .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; margin-bottom: 6px; font-weight: 500; color: #666; font-size: 0.9rem; padding-left: 5px; }
-    input[type="text"] { width: 100%; padding: 10px 15px; box-sizing: border-box; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 15px; font-family: 'Kanit', sans-serif; transition: all 0.3s ease; background: #fff; outline: none; }
-    input:focus { border-color: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
-    .skeleton-input { background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%) !important; background-size: 200% 100% !important; animation: shimmer 1.5s infinite ease-in-out !important; color: transparent !important; border: 2px solid #e2e8f0 !important; pointer-events: none; user-select: none; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    button { width: 100%; padding: 12px; background: linear-gradient(45deg, #22c55e, #4ade80); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 600; font-family: 'Kanit', sans-serif; margin-top: 10px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: all 0.3s ease; }
-    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6); }
-    button:disabled { background: #d1d5db; color: #6b7280; cursor: not-allowed; box-shadow: none; transform: none; }
-    .text-center { text-align: center; }
+    body { font-family: 'Kanit', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #ffffff; }
+    .container { background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 380px; text-align: center; }
+    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid #22c55e; }
+    input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; font-family: 'Kanit'; }
+    button { width: 100%; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    button:disabled { background: #ccc; }
   </style>
 </head>
 <body>
-
-  <div class="wave-container">
-    <svg class="waves" viewBox="0 24 150 28" preserveAspectRatio="none">
-      <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
-      <g class="parallax">
-        <use href="#gentle-wave" x="48" y="0" fill="rgba(34, 197, 94, 0.1)" />
-        <use href="#gentle-wave" x="48" y="3" fill="rgba(34, 197, 94, 0.2)" />
-        <use href="#gentle-wave" x="48" y="5" fill="rgba(34, 197, 94, 0.3)" />
-        <use href="#gentle-wave" x="48" y="7" fill="rgba(240, 253, 244, 1)" />
-      </g>
-    </svg>
-  </div>
-
   <div class="container">
-    <div class="text-center">
-      <div class="profile-wrapper">
-        <div id="loadingPlaceholder" class="profile-placeholder"><span>●●●</span></div>
-        <img id="profileImage" class="profile-img" src="" alt="Profile Image">
-      </div>
-      <h3 id="displayName">กำลังเชื่อมต่อระบบ...</h3>
-    </div>
-
+    <img id="profileImage" class="profile-img" src="https://via.placeholder.com/150" style="display:none;">
+    <h3 id="displayName">กำลังโหลด...</h3>
     <form id="myForm" onsubmit="submitForm(event)">
-      <div class="form-group">
-        <label for="name">ชื่อ</label>
-        <input type="text" id="name" class="skeleton-input" disabled required placeholder="กรอกชื่อจริง">
-      </div>
-      <div class="form-group">
-        <label for="surname">นามสกุล</label>
-        <input type="text" id="surname" class="skeleton-input" disabled required placeholder="กรอกนามสกุล">
-      </div>
-      <button type="submit" id="submitBtn" disabled>ลงทะเบียน</button>
+      <input type="text" id="name" required placeholder="ชื่อจริง" disabled>
+      <input type="text" id="surname" required placeholder="นามสกุล" disabled>
+      <input type="tel" id="phone" required placeholder="เบอร์โทรศัพท์" maxlength="10" disabled>
+      <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
     </form>
   </div>
 
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
-    const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
     window.onload = async function() {
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) {
-          liff.login();
-        } else {
+        if (!liff.isLoggedIn()) { liff.login(); } 
+        else {
           const profile = await liff.getProfile();
-          lineProfile = {
-            userId: profile.userId,
-            displayName: profile.displayName,
-            language: liff.getLanguage() || 'th', // เก็บภาษา
-            pictureUrl: profile.pictureUrl || ''
-          };
-          
-          document.getElementById('displayName').innerText = 'กำลังตรวจสอบข้อมูล...';
-          document.getElementById('displayName').style.color = '#eab308';
-          
-          const checkUrl = `${API_URL}?lineId=${profile.userId}`;
-          const response = await fetch(checkUrl);
+          lineProfile = { userId: profile.userId, displayName: profile.displayName, language: liff.getLanguage(), pictureUrl: profile.pictureUrl };
+          const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
           const result = await response.json();
-          
-          if (result.isRegistered) {
-            Swal.fire({
-              icon: 'success',
-              title: 'เข้าสู่ระบบสำเร็จ',
-              text: 'กำลังพาท่านไปหน้า Dashboard...',
-              timer: 2000,
-              showConfirmButton: false
-            }).then(() => {
-               window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId);
-            });
-          } else {
-            const inputs = ['name', 'surname'];
-            inputs.forEach(id => {
-              document.getElementById(id).classList.remove('skeleton-input');
-              document.getElementById(id).disabled = false;
-            });
+          if (result.isRegistered) { window.top.location.replace(result.redirectUrl + "?uid=" + profile.userId); } 
+          else {
+            document.getElementById('name').disabled = false;
+            document.getElementById('surname').disabled = false;
+            document.getElementById('phone').disabled = false;
             document.getElementById('submitBtn').disabled = false;
-
-            document.getElementById('displayName').innerText = 'สวัสดีคุณ ' + profile.displayName;
-            document.getElementById('displayName').style.color = '#16a34a';
-
+            document.getElementById('displayName').innerText = profile.displayName;
             if(profile.pictureUrl) {
-              const profileImg = document.getElementById('profileImage');
-              profileImg.src = profile.pictureUrl;
-              profileImg.onload = () => {
-                profileImg.style.display = 'block';
-                document.getElementById('loadingPlaceholder').style.display = 'none';
-              }
+              const img = document.getElementById('profileImage');
+              img.src = profile.pictureUrl; img.style.display = 'inline-block';
             }
           }
         }
-      } catch (err) {
-        document.getElementById('displayName').innerText = 'เกิด Error: ' + err.message;
-        document.getElementById('displayName').style.color = 'red';
-      }
+      } catch (err) { alert(err.message); }
     };
 
-    function submitForm(event) {
+    async function submitForm(event) {
       event.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerText = 'กำลังบันทึกข้อมูล...';
-
-      Swal.fire({
-        title: 'กำลังบันทึกข้อมูล',
-        html: 'ระบบกำลังนำข้อมูลลงฐานข้อมูล กรุณารอสักครู่...',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-      });
-
-      // จัดเรียง Data ใหม่ส่งกลับไปให้ Apps Script
+      document.getElementById('submitBtn').disabled = true;
+      Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const payload = {
-        userId: lineProfile.userId,
-        displayName: lineProfile.displayName,
-        language: lineProfile.language,
-        pictureUrl: lineProfile.pictureUrl,
-        name: document.getElementById('name').value,
-        surname: document.getElementById('surname').value,
-        status: "Active" 
+        userId: lineProfile.userId, displayName: lineProfile.displayName, language: lineProfile.language, pictureUrl: lineProfile.pictureUrl,
+        name: document.getElementById('name').value, surname: document.getElementById('surname').value, phone: document.getElementById('phone').value, status: "Active"
       };
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(result => {
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
         if(result.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'บันทึกข้อมูลสำเร็จ!',
-            text: 'กำลังพาท่านเข้าสู่ระบบ...',
-            timer: 2000,
-            showConfirmButton: false
-          }).then(() => {
-              window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId); 
-          });
-        } else {
-          throw new Error(result.error);
+          Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false })
+          .then(() => window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId));
         }
-      })
-      .catch(error => {
-        btn.disabled = false;
-        btn.innerText = 'ลองใหม่อีกครั้ง';
-        Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: error.message || 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
-          confirmButtonText: 'ตกลง'
-        });
-      });
+      } catch (e) { alert(e.message); document.getElementById('submitBtn').disabled = false; }
     }
   </script>
 </body>
