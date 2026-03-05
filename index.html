@@ -9,22 +9,21 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { font-family: 'Kanit', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #ffffff; }
-    .container { background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 380px; text-align: center; }
-    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid #22c55e; }
-    input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; font-family: 'Kanit'; }
+    .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 380px; text-align: center; }
+    input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; }
     button { width: 100%; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-    button:disabled { background: #ccc; }
+    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid #22c55e; display:none; }
   </style>
 </head>
 <body>
   <div class="container">
-    <img id="profileImage" class="profile-img" src="https://via.placeholder.com/150" style="display:none;">
+    <img id="profileImage" class="profile-img" src="">
     <h3 id="displayName">กำลังโหลด...</h3>
-    <form id="myForm" onsubmit="submitForm(event)">
+    <form onsubmit="submitForm(event)">
       <input type="text" id="name" required placeholder="ชื่อจริง" disabled>
       <input type="text" id="surname" required placeholder="นามสกุล" disabled>
       <input type="tel" id="phone" required placeholder="เบอร์โทรศัพท์" maxlength="10" disabled>
-      <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
+      <button type="submit" id="submitBtn" disabled>ลงทะเบียน</button>
     </form>
   </div>
 
@@ -44,23 +43,17 @@
           const result = await response.json();
           if (result.isRegistered) { window.top.location.replace(result.redirectUrl + "?uid=" + profile.userId); } 
           else {
-            document.getElementById('name').disabled = false;
-            document.getElementById('surname').disabled = false;
-            document.getElementById('phone').disabled = false;
+            ['name', 'surname', 'phone'].forEach(id => { document.getElementById(id).disabled = false; });
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('displayName').innerText = profile.displayName;
-            if(profile.pictureUrl) {
-              const img = document.getElementById('profileImage');
-              img.src = profile.pictureUrl; img.style.display = 'inline-block';
-            }
+            if(profile.pictureUrl) { document.getElementById('profileImage').src = profile.pictureUrl; document.getElementById('profileImage').style.display = 'inline-block'; }
           }
         }
-      } catch (err) { alert(err.message); }
+      } catch (err) { console.error(err); }
     };
 
     async function submitForm(event) {
       event.preventDefault();
-      document.getElementById('submitBtn').disabled = true;
       Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const payload = {
         userId: lineProfile.userId, displayName: lineProfile.displayName, language: lineProfile.language, pictureUrl: lineProfile.pictureUrl,
@@ -73,7 +66,7 @@
           Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false })
           .then(() => window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId));
         }
-      } catch (e) { alert(e.message); document.getElementById('submitBtn').disabled = false; }
+      } catch (e) { console.error(e); }
     }
   </script>
 </body>
