@@ -6,9 +6,7 @@
   <title>ลงทะเบียนสมาชิก</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
   <style>
-    /* ... (CSS ส่วนเดิมของคุณทั้งหมดคงไว้เหมือนเดิม) ... */
     body { font-family: 'Kanit', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #ffffff; color: #555; overflow: hidden; }
     .wave-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 30vh; z-index: -1; pointer-events: none; }
     .waves { position: absolute; width: 100%; height: 100%; min-height: 100px; }
@@ -16,23 +14,22 @@
     .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
     .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
     .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
-    .parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 200s; }
+    .parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
     @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
-    .container { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(34, 197, 94, 0.15); width: 90%; max-width: 380px; border: 1px solid rgba(255, 255, 255, 0.8); z-index: 1; margin-bottom: 10vh; }
-    .profile-wrapper { position: relative; width: 110px; height: 110px; margin: 0 auto 20px auto; }
+    .container { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(34, 197, 94, 0.15); width: 90%; max-width: 380px; border: 1px solid rgba(255, 255, 255, 0.8); z-index: 1; margin-bottom: 5vh; max-height: 90vh; overflow-y: auto;}
+    .profile-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 15px auto; }
     .profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.25); display: none; }
     .profile-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #f0fdf4; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #22c55e; }
-    h3 { margin: 0 0 20px 0; font-weight: 600; color: #16a34a; font-size: 1.2rem; }
-    .form-group { margin-bottom: 20px; text-align: left; }
-    label { display: block; margin-bottom: 8px; font-weight: 500; color: #666; font-size: 0.95rem; padding-left: 5px; }
-    input[type="text"] { width: 100%; padding: 12px 15px; box-sizing: border-box; border: 2px solid #e5e7eb; border-radius: 15px; font-size: 16px; font-family: 'Kanit', sans-serif; transition: all 0.3s ease; background: #fff; outline: none; }
-    input[type="text"]:focus { border-color: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
+    h3 { margin: 0 0 15px 0; font-weight: 600; color: #16a34a; font-size: 1.1rem; }
+    .form-group { margin-bottom: 15px; text-align: left; }
+    label { display: block; margin-bottom: 6px; font-weight: 500; color: #666; font-size: 0.9rem; padding-left: 5px; }
+    input[type="text"], input[type="tel"] { width: 100%; padding: 10px 15px; box-sizing: border-box; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 15px; font-family: 'Kanit', sans-serif; transition: all 0.3s ease; background: #fff; outline: none; }
+    input:focus { border-color: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
     .skeleton-input { background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%) !important; background-size: 200% 100% !important; animation: shimmer 1.5s infinite ease-in-out !important; color: transparent !important; border: 2px solid #e2e8f0 !important; pointer-events: none; user-select: none; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    button { width: 100%; padding: 14px; background: linear-gradient(45deg, #22c55e, #4ade80); color: white; border: none; border-radius: 15px; cursor: pointer; font-size: 18px; font-weight: 600; font-family: 'Kanit', sans-serif; margin-top: 15px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: all 0.3s ease; }
+    button { width: 100%; padding: 12px; background: linear-gradient(45deg, #22c55e, #4ade80); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 600; font-family: 'Kanit', sans-serif; margin-top: 10px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: all 0.3s ease; }
     button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6); }
     button:disabled { background: #d1d5db; color: #6b7280; cursor: not-allowed; box-shadow: none; transform: none; }
-    .success-btn { background: linear-gradient(45deg, #16a34a, #22c55e) !important; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4) !important; }
     .text-center { text-align: center; }
   </style>
 </head>
@@ -40,9 +37,7 @@
 
   <div class="wave-container">
     <svg class="waves" viewBox="0 24 150 28" preserveAspectRatio="none">
-      <defs>
-        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-      </defs>
+      <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
       <g class="parallax">
         <use href="#gentle-wave" x="48" y="0" fill="rgba(34, 197, 94, 0.1)" />
         <use href="#gentle-wave" x="48" y="3" fill="rgba(34, 197, 94, 0.2)" />
@@ -70,75 +65,76 @@
         <label for="surname">นามสกุล</label>
         <input type="text" id="surname" class="skeleton-input" disabled required placeholder="กรอกนามสกุล">
       </div>
-      <button type="submit" id="submitBtn" disabled>บันทึกข้อมูล</button>
+      <div class="form-group">
+        <label for="phone">เบอร์โทรศัพท์</label>
+        <input type="tel" id="phone" class="skeleton-input" disabled required placeholder="กรอกเบอร์โทรศัพท์" maxlength="10">
+      </div>
+      <button type="submit" id="submitBtn" disabled>ลงทะเบียน</button>
     </form>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     let lineProfile = {};
-    const LIFF_ID = "2009229714-1R09rohG"; 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
+    const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🚩 URL ปลายทางที่ต้องการให้กลับไปแสดงผล (Dashboard)
-    const REDIRECT_URL_SUCCESS = 'https://script.google.com/macros/s/AKfycbxSKNvwID2FqEqwKg2DM-LJGGXuwnhN_grUmBw51kPE5bklNyn9DuNpowd6y25g48Wy/exec';
-
-    const displayElement = document.getElementById('displayName');
-    const profileImg = document.getElementById('profileImage');
-    const placeholder = document.getElementById('loadingPlaceholder');
-
-    // ฟังก์ชัน Redirect กลับไปยังระบบหลัก
-    function returnToPreviousSystem() {
-      window.location.replace(REDIRECT_URL_SUCCESS);
-    }
+    // 🌟 เปลี่ยน API_URL เป็นลิงก์ใหม่แล้ว
+    const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec"; 
 
     window.onload = async function() {
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (liff.isLoggedIn()) {
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        } else {
           const profile = await liff.getProfile();
           lineProfile = {
             userId: profile.userId,
             displayName: profile.displayName,
-            language: liff.getLanguage() || 'th',
             pictureUrl: profile.pictureUrl || ''
           };
           
-          displayElement.innerText = 'กำลังตรวจสอบข้อมูล...';
+          document.getElementById('displayName').innerText = 'กำลังตรวจสอบข้อมูล...';
+          document.getElementById('displayName').style.color = '#eab308';
           
-          const checkUrl = `${GAS_URL}?action=check&userId=${profile.userId}`;
+          const checkUrl = `${API_URL}?lineId=${profile.userId}`;
           const response = await fetch(checkUrl);
           const result = await response.json();
           
-          if (result.exists) {
+          if (result.isRegistered) {
             Swal.fire({
               icon: 'success',
-              title: 'คุณลงทะเบียนแล้ว',
+              title: 'เข้าสู่ระบบสำเร็จ',
               text: 'กำลังพาท่านไปหน้า Dashboard...',
               timer: 2000,
               showConfirmButton: false
             }).then(() => {
-              returnToPreviousSystem(); 
+               window.location.replace(result.redirectUrl);
             });
           } else {
-            // ปลดล็อคฟอร์ม
-            document.getElementById('name').classList.remove('skeleton-input');
-            document.getElementById('name').disabled = false;
-            document.getElementById('surname').classList.remove('skeleton-input');
-            document.getElementById('surname').disabled = false;
+            const inputs = ['name', 'surname', 'phone'];
+            inputs.forEach(id => {
+              document.getElementById(id).classList.remove('skeleton-input');
+              document.getElementById(id).disabled = false;
+            });
             document.getElementById('submitBtn').disabled = false;
-            
-            displayElement.innerText = 'สวัสดีคุณ ' + profile.displayName;
+
+            document.getElementById('displayName').innerText = 'สวัสดีคุณ ' + profile.displayName;
+            document.getElementById('displayName').style.color = '#16a34a';
+
             if(profile.pictureUrl) {
-                profileImg.src = profile.pictureUrl;
-                profileImg.onload = () => { profileImg.style.display = 'block'; placeholder.style.display = 'none'; }
+              const profileImg = document.getElementById('profileImage');
+              profileImg.src = profile.pictureUrl;
+              profileImg.onload = () => {
+                profileImg.style.display = 'block';
+                document.getElementById('loadingPlaceholder').style.display = 'none';
+              }
             }
           }
-        } else {
-          liff.login();
         }
       } catch (err) {
-        displayElement.innerText = 'เกิด Error: ' + err.message;
+        document.getElementById('displayName').innerText = 'เกิด Error: ' + err.message;
+        document.getElementById('displayName').style.color = 'red';
       }
     };
 
@@ -150,42 +146,49 @@
 
       Swal.fire({
         title: 'กำลังบันทึกข้อมูล',
-        html: 'กรุณารอสักครู่...',
+        html: 'ระบบกำลังนำข้อมูลลงฐานข้อมูล กรุณารอสักครู่...',
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading(); }
       });
 
-      const data = {
-        userId: lineProfile.userId,
+      const payload = {
+        lineId: lineProfile.userId,
         displayName: lineProfile.displayName,
-        language: lineProfile.language,
         pictureUrl: lineProfile.pictureUrl,
-        name: document.getElementById('name').value,
-        surname: document.getElementById('surname').value
+        firstName: document.getElementById('name').value,
+        lastName: document.getElementById('surname').value,
+        phone: document.getElementById('phone').value
       };
 
-      const params = new URLSearchParams(data).toString();
-      fetch(GAS_URL + "?" + params)
-      .then(res => res.json())
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
       .then(result => {
         if(result.success) {
           Swal.fire({
             icon: 'success',
-            title: 'บันทึกสำเร็จ!',
-            text: 'ยินดีต้อนรับเข้าสู่ระบบ...',
+            title: 'บันทึกข้อมูลสำเร็จ!',
+            text: 'กำลังพาท่านเข้าสู่ระบบ...',
             timer: 2000,
             showConfirmButton: false
           }).then(() => {
-              returnToPreviousSystem(); 
+              window.location.replace(result.redirectUrl); 
           });
         } else {
-          throw new Error(result.message);
+          throw new Error(result.error);
         }
       })
       .catch(error => {
         btn.disabled = false;
         btn.innerText = 'ลองใหม่อีกครั้ง';
-        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: error.message });
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: error.message || 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
+          confirmButtonText: 'ตกลง'
+        });
       });
     }
   </script>
