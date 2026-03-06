@@ -25,7 +25,6 @@
       box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
     }
 
-    /* --- Focus Effects --- */
     .input-pill {
       flex: 1;
       display: flex;
@@ -48,7 +47,6 @@
     .input-pill:focus-within i { color: #0ea5e9; transform: scale(1.15); }
     .input-pill input:disabled { background-color: transparent; cursor: not-allowed; opacity: 0.6; }
 
-    /* --- Dept Selection Grid --- */
     .dept-checkbox:checked + label {
       background: linear-gradient(135deg, #38bdf8, #10b981);
       color: white;
@@ -83,7 +81,6 @@
     }
     .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* โปรไฟล์ LINE */
     .line-profile-img {
       width: 80px;
       height: 80px;
@@ -192,13 +189,13 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🌟 1. ลิงก์ API สำหรับเช็คสิทธิ์และบันทึกลง Sheet (ห้ามแก้)
+    // 🌟 API_URL คือลิงก์ของ "ระบบลงทะเบียน/ฐานข้อมูลกลาง"
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // 🌟 2. ลิงก์ระบบต่างๆ (แก้ลิงก์ Dashboard ให้ถูกต้องที่นี่เพื่อหยุดการวนลูป)
+    // 🌟 SYSTEM_URLS คือลิงก์ "หน้าเว็บปลายทาง" ที่ต้องการส่งไปเมื่อเช็คสิทธิ์ผ่านแล้ว
     const SYSTEM_URLS = {
-      // 🔴🔴 นำลิงก์หน้า Dashboard ของจริงมาวางตรงนี้ 🔴🔴
-      "dashboard": "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec", 
+      // ✅ แก้ไขแล้ว: นำลิงก์ Web App หน้า Dashboard ของจริงมาใส่ให้แล้วครับ จะได้ไม่ชนกับหน้าลงทะเบียน
+      "dashboard": "https://script.google.com/macros/s/AKfycbwaduenDoCUDDSnY0LqISiOOdqjZKrxdP1_6GwRTvn-69flLDYsg4v0rhHJHndFuui4/exec", 
       
       "calendar": "https://script.google.com/macros/s/AKfycbw_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
       "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec"
@@ -242,7 +239,6 @@
             localStorage.setItem('sso_user_uid', profile.userId);
             window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
           } else {
-            // เปิดให้แก้ฟอร์มได้เมื่อยังไม่ลงทะเบียน
             ['name', 'surname', 'phone', 'password'].forEach(id => document.getElementById(id).disabled = false);
             document.querySelectorAll('.dept-checkbox').forEach(cb => cb.disabled = false);
             document.getElementById('submitBtn').disabled = false;
@@ -299,5 +295,3 @@
   </script>
 </body>
 </html>
-
-
