@@ -44,19 +44,9 @@
       transform: translateY(-2px);
     }
 
-    .input-pill i {
-      transition: all 0.3s ease;
-    }
-    .input-pill:focus-within i {
-      color: #0ea5e9;
-      transform: scale(1.15);
-    }
-
-    .input-pill input:disabled {
-      background-color: transparent;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
+    .input-pill i { transition: all 0.3s ease; }
+    .input-pill:focus-within i { color: #0ea5e9; transform: scale(1.15); }
+    .input-pill input:disabled { background-color: transparent; cursor: not-allowed; opacity: 0.6; }
 
     /* --- Dept Selection Grid --- */
     .dept-checkbox:checked + label {
@@ -91,10 +81,7 @@
       transform: scale(1.02);
       box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
     }
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
     /* โปรไฟล์ LINE */
     .line-profile-img {
@@ -128,8 +115,6 @@
 
     <form id="regForm" onsubmit="submitForm(event)" class="space-y-6">
       
-      <input type="hidden" id="lineId">
-
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="flex items-center gap-3">
           <label class="w-16 text-sm font-semibold text-slate-500">ชื่อจริง</label>
@@ -167,7 +152,6 @@
       <div class="pt-4 border-t border-slate-50 mt-4">
         <div class="flex flex-col md:flex-row gap-4">
           <label class="w-full md:w-16 text-sm font-semibold text-slate-500 md:mt-2">ฝ่าย</label>
-          
           <div class="flex-1">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <script>
@@ -207,16 +191,19 @@
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
-    // ⚠️ ระบุลิงก์ Database กลางของคุณ
+    
+    // 🌟 1. ลิงก์ API สำหรับเช็คสิทธิ์และบันทึกลง Sheet (ห้ามแก้)
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
+    // 🌟 2. ลิงก์ระบบต่างๆ (แก้ลิงก์ Dashboard ให้ถูกต้องที่นี่เพื่อหยุดการวนลูป)
     const SYSTEM_URLS = {
-      "dashboard": API_URL, 
+      // 🔴🔴 นำลิงก์หน้า Dashboard ของจริงมาวางตรงนี้ 🔴🔴
+      "dashboard": "https://script.google.com/macros/s/ใส่ลิงก์หน้า_Dashboard_ที่นี่/exec", 
+      
       "calendar": "https://script.google.com/macros/s/AKfycbw_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
       "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec"
     };
 
-    // ฟังก์ชันเลือกแผนกได้แค่ช่องเดียว
     function onlyOne(checkbox) {
       const checkboxes = document.querySelectorAll('.dept-checkbox');
       checkboxes.forEach((item) => {
@@ -224,7 +211,6 @@
       });
     }
 
-    // ฟังก์ชันดึงแผนกที่ถูกเลือก
     function getSelectedDept() {
       const checked = document.querySelector('.dept-checkbox:checked');
       return checked ? checked.value : "";
@@ -238,7 +224,10 @@
       if (urlParams.get('action') === 'logout') { localStorage.removeItem('sso_user_uid'); }
 
       const cachedUid = localStorage.getItem('sso_user_uid');
-      if (cachedUid) { window.top.location.replace(redirectUrl + "?uid=" + cachedUid); return; }
+      if (cachedUid) { 
+          window.top.location.replace(redirectUrl + "?uid=" + cachedUid); 
+          return; 
+      }
 
       try {
         await liff.init({ liffId: LIFF_ID });
@@ -253,12 +242,11 @@
             localStorage.setItem('sso_user_uid', profile.userId);
             window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
           } else {
-            // เปิดให้แก้ไขฟอร์มได้
+            // เปิดให้แก้ฟอร์มได้เมื่อยังไม่ลงทะเบียน
             ['name', 'surname', 'phone', 'password'].forEach(id => document.getElementById(id).disabled = false);
             document.querySelectorAll('.dept-checkbox').forEach(cb => cb.disabled = false);
             document.getElementById('submitBtn').disabled = false;
             
-            // แสดงข้อมูล LINE
             document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
             if(profile.pictureUrl) {
               document.getElementById('profileImage').src = profile.pictureUrl;
@@ -275,7 +263,7 @@
       
       const department = getSelectedDept();
       if (!department) {
-        Swal.fire('กรุณาระบุข้อมูล', 'กรุณาเลือกฝ่าย/แผนก ที่สังกัด', 'warning');
+        Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกฝ่ายที่สังกัดด้วยครับ', 'warning');
         return;
       }
 
@@ -296,16 +284,17 @@
       try {
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
+        
         if(result.success) {
-          Swal.fire({ icon: 'success', title: 'ลงทะเบียนสำเร็จ!', text: 'ระบบกำลังพาท่านเข้าสู่แดชบอร์ด', timer: 2000, showConfirmButton: false }).then(() => {
+          Swal.fire({ icon: 'success', title: 'ลงทะเบียนสำเร็จ!', text: 'กำลังพาท่านเข้าสู่ระบบ', timer: 2000, showConfirmButton: false }).then(() => {
             localStorage.setItem('sso_user_uid', lineProfile.userId);
-            const urlParams = newSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);
             const targetApp = urlParams.get('target') || "dashboard";
             const redirectUrl = SYSTEM_URLS[targetApp] || SYSTEM_URLS["dashboard"];
             window.top.location.replace(redirectUrl + "?uid=" + lineProfile.userId);
           });
         }
-      } catch (e) { Swal.fire('Error', 'เซิร์ฟเวอร์ขัดข้อง ไม่สามารถบันทึกข้อมูลได้', 'error'); }
+      } catch (e) { Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); }
     }
   </script>
 </body>
