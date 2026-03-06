@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ลงทะเบียนเจ้าหน้าที่ สอ.กวก.</title>
+  <title>ระบบเจ้าหน้าที่ สอ.กวก.</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,14 +17,12 @@
       background-image: radial-gradient(#e0f2fe 1px, transparent 1px);
       background-size: 20px 20px;
     }
-
     .minimal-card {
       background: #ffffff;
       border: 2px solid #f1f5f9;
       border-radius: 40px;
       box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
     }
-
     .input-pill {
       flex: 1;
       display: flex;
@@ -35,40 +33,14 @@
       border-radius: 9999px;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .input-pill:focus-within {
       border-color: #38bdf8;
       background-color: #ffffff;
       box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.15);
       transform: translateY(-2px);
     }
-
     .input-pill i { transition: all 0.3s ease; }
     .input-pill:focus-within i { color: #0ea5e9; transform: scale(1.15); }
-
-    .dept-checkbox:checked + label {
-      background: linear-gradient(135deg, #38bdf8, #10b981);
-      color: white;
-      border-color: transparent;
-      transform: scale(1.05);
-      box-shadow: 0 5px 12px rgba(56, 189, 248, 0.3);
-    }
-
-    .dept-label {
-      cursor: pointer;
-      border: 2px solid #f1f5f9;
-      font-size: 0.75rem;
-      padding: 0.6rem 0.25rem;
-      text-align: center;
-      border-radius: 15px;
-      background-color: #fff;
-      color: #64748b;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      display: block;
-    }
-
-    .dept-checkbox { display: none; }
 
     .btn-submit {
       background: linear-gradient(to right, #0ea5e9, #10b981);
@@ -78,7 +50,6 @@
       transform: scale(1.02);
       box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
     }
-
     .line-profile-img {
       width: 80px;
       height: 80px;
@@ -87,8 +58,6 @@
       border: 4px solid white;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-
-    /* --- Loading Screen Styles --- */
     #loadingScreen {
       position: fixed;
       inset: 0;
@@ -119,7 +88,7 @@
     <p class="text-slate-400 text-sm mt-2">กรุณารอสักครู่</p>
   </div>
 
-  <div id="mainContent" class="min-h-screen flex items-center justify-center p-4" style="display: none;">
+  <div id="registerContent" class="min-h-screen flex items-center justify-center p-4" style="display: none;">
     <div class="minimal-card w-full max-w-2xl p-8 md:p-12 my-4">
       
       <div class="flex flex-col md:flex-row items-center gap-6 mb-8 border-b border-slate-50 pb-8 text-center md:text-left relative">
@@ -129,18 +98,17 @@
           </div>
         </div>
         <div>
-          <h2 class="text-2xl font-bold text-slate-700">ลงทะเบียนเจ้าหน้าที่ สอ.กวก.</h2>
-          <p id="displayName" class="text-slate-400 font-medium text-sm mt-1">กรุณาระบุข้อมูลส่วนตัวเพื่อเข้าใช้งานระบบ</p>
+          <h2 class="text-2xl font-bold text-slate-700">ลงทะเบียนบัญชีใหม่</h2>
+          <p id="displayName" class="text-slate-400 font-medium text-sm mt-1">กรุณาระบุข้อมูลเพื่อเข้าใช้งานระบบ</p>
         </div>
       </div>
 
       <form id="regForm" onsubmit="submitForm(event)" class="space-y-6">
-        
         <div class="flex items-center gap-3">
           <label class="w-16 text-sm font-semibold text-slate-500">Username</label>
           <div class="input-pill">
             <i class="fa-solid fa-user text-sky-300 mr-3"></i>
-            <input type="text" id="username" required placeholder="ระบุ Username สำหรับเข้าระบบ" class="bg-transparent w-full outline-none text-sm text-slate-600">
+            <input type="text" id="username" required placeholder="ตั้ง Username สำหรับเข้าระบบ" class="bg-transparent w-full outline-none text-sm text-slate-600">
           </div>
         </div>
 
@@ -161,57 +129,70 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="flex items-center gap-3">
-            <label class="w-16 text-sm font-semibold text-slate-500">โทรศัพท์</label>
-            <div class="input-pill">
-              <i class="fa-solid fa-phone text-sky-300 mr-3"></i>
-              <input type="tel" id="phone" required placeholder="08XXXXXXXX" maxlength="10" class="bg-transparent w-full outline-none text-sm text-slate-600">
-            </div>
-          </div>
-          <div class="flex items-center gap-3">
-            <label class="w-16 md:w-14 text-sm font-semibold text-slate-500">Pass</label>
-            <div class="input-pill">
-              <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
-              <input type="password" id="password" required placeholder="Password" class="bg-transparent w-full outline-none text-sm text-slate-600">
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-4 border-t border-slate-50 mt-4">
-          <div class="flex flex-col md:flex-row gap-4">
-            <label class="w-full md:w-16 text-sm font-semibold text-slate-500 md:mt-2">ฝ่าย</label>
-            <div class="flex-1">
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <script>
-                  const depts = ["ฝ่ายอำนวยการ", "สินเชื่อ", "การเงิน", "บัญชี", "สมาชิกสัมพันธ์", "สารสนเทศ", "ผู้ช่วยผู้จัดการ", "ผู้จัดการ"];
-                  depts.forEach((dept, index) => {
-                    document.write(`
-                      <div>
-                        <input type="checkbox" id="dept_${index}" value="${dept}" class="dept-checkbox" onclick="onlyOne(this)">
-                        <label for="dept_${index}" class="dept-label shadow-sm">${dept}</label>
-                      </div>
-                    `);
-                  });
-                </script>
-              </div>
-            </div>
+        <div class="flex items-center gap-3">
+          <label class="w-16 text-sm font-semibold text-slate-500">Password</label>
+          <div class="input-pill">
+            <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
+            <input type="password" id="password" required placeholder="ตั้ง Password ของคุณ" class="bg-transparent w-full outline-none text-sm text-slate-600">
           </div>
         </div>
 
         <div class="pt-6">
-          <button type="submit" id="submitBtn" class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
-            <span>ยืนยันข้อมูลเจ้าหน้าที่</span>
-            <i class="fa-solid fa-check-circle"></i>
+          <button type="submit" class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
+            <span>ยืนยันการลงทะเบียน</span>
+            <i class="fa-solid fa-user-plus"></i>
           </button>
         </div>
 
-        <div class="pt-8 border-t border-slate-50 text-center">
-          <p class="text-[11px] text-slate-400 font-medium tracking-wide uppercase">
-            2026 ฝ่ายสารสนเทศ | สหกรณ์ออมทรัพย์กรมวิชาการเกษตรจำกัด
-          </p>
+        <div class="pt-6 text-center">
+          <button type="button" onclick="showLogin()" class="text-sky-600 font-semibold text-sm hover:underline hover:text-sky-800 transition-colors">
+            มีบัญชีแล้ว หรือเปลี่ยนอุปกรณ์ใหม่? คลิกเพื่อเข้าสู่ระบบ
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="loginContent" class="min-h-screen flex items-center justify-center p-4" style="display: none;">
+    <div class="minimal-card w-full max-w-md p-8 md:p-12 my-4">
+      
+      <div class="text-center mb-8 border-b border-slate-50 pb-8">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-sky-400 to-emerald-400 rounded-full shadow-md mb-6 text-white text-3xl">
+          <i class="fa-solid fa-right-to-bracket"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-700">เข้าสู่ระบบ</h2>
+        <p class="text-slate-400 font-medium text-sm mt-2">ยืนยันตัวตนเพื่อเข้าใช้งาน</p>
+      </div>
+
+      <form id="loginForm" onsubmit="submitLogin(event)" class="space-y-6">
+        <div class="flex items-center gap-3">
+          <label class="w-16 text-sm font-semibold text-slate-500">Username</label>
+          <div class="input-pill">
+            <i class="fa-solid fa-user text-sky-300 mr-3"></i>
+            <input type="text" id="loginUsername" required placeholder="ระบุ Username ของคุณ" class="bg-transparent w-full outline-none text-sm text-slate-600">
+          </div>
         </div>
 
+        <div class="flex items-center gap-3">
+          <label class="w-16 text-sm font-semibold text-slate-500">Password</label>
+          <div class="input-pill">
+            <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
+            <input type="password" id="loginPassword" required placeholder="ระบุรหัสผ่านของคุณ" class="bg-transparent w-full outline-none text-sm text-slate-600">
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
+            <span>เข้าสู่ระบบ</span>
+            <i class="fa-solid fa-sign-in-alt"></i>
+          </button>
+        </div>
+
+        <div class="pt-6 text-center">
+          <button type="button" onclick="showRegister()" class="text-sky-600 font-semibold text-sm hover:underline hover:text-sky-800 transition-colors">
+            ยังไม่มีบัญชี? กลับไปหน้าลงทะเบียนใหม่
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -219,28 +200,23 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     let lineProfile = {};
+    
+    // 🔴 1. ตั้งค่า LIFF ID ของคุณ
     const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🔴 1. API_URL = ลิงก์ของระบบฐานข้อมูลกลาง
+    // 🔴 2. ตั้งค่า API_URL และ DASHBOARD_URL เป็นลิงก์ Web App ของคุณ
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
-
-    // 🔴 2. DASHBOARD_URL = ลิงก์แดชบอร์ดสำหรับคนที่เคยลงทะเบียนแล้ว
     const DASHBOARD_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // 🔴 3. LOGIN_URL = ลิงก์หน้า Login (สำหรับ User ใหม่ที่พึ่งลงทะเบียนเสร็จ)
-    // ⚠️ อย่าลืมแก้ลิงก์นี้ให้เป็นหน้า Login ของคุณครับ
-    const LOGIN_URL = "https://ลิงก์หน้า_Login_ของคุณ";
-
-    function onlyOne(checkbox) {
-      const checkboxes = document.querySelectorAll('.dept-checkbox');
-      checkboxes.forEach((item) => {
-        if (item !== checkbox) item.checked = false;
-      });
+    // ฟังก์ชันสลับการแสดงผลหน้า UI
+    function showLogin() {
+      document.getElementById('registerContent').style.display = 'none';
+      document.getElementById('loginContent').style.display = 'flex';
     }
 
-    function getSelectedDept() {
-      const checked = document.querySelector('.dept-checkbox:checked');
-      return checked ? checked.value : "";
+    function showRegister() {
+      document.getElementById('loginContent').style.display = 'none';
+      document.getElementById('registerContent').style.display = 'flex';
     }
 
     window.onload = async function() {
@@ -252,21 +228,25 @@
           return;
         } 
         
+        // เก็บข้อมูลจาก Line ปัจจุบัน
         const profile = await liff.getProfile();
         lineProfile = { 
           userId: profile.userId, 
-          displayName: profile.displayName, 
-          pictureUrl: profile.pictureUrl 
+          displayName: profile.displayName,
+          pictureUrl: profile.pictureUrl
         };
         
+        // เช็คว่า UserID นี้เคยอยู่ในระบบหรือไม่ (จากทั้ง 2 ชีต)
         const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
         const result = await response.json();
         
         if (result.isRegistered) { 
+          // ถ้าเคยมีข้อมูล ให้เด้งไป Dashboard เลย
           window.location.replace(DASHBOARD_URL + "?uid=" + profile.userId);
         } else {
+          // ถ้ายังไม่เคยมี ให้แสดงหน้าลงทะเบียน
           document.getElementById('loadingScreen').style.display = 'none';
-          document.getElementById('mainContent').style.display = 'flex';
+          document.getElementById('registerContent').style.display = 'flex';
           
           document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
           if(profile.pictureUrl) {
@@ -276,32 +256,23 @@
           }
         }
       } catch (err) { 
-        console.error(err);
         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
       }
     };
 
+    // 🌟 1. ยืนยันการลงทะเบียน
     async function submitForm(event) {
       event.preventDefault();
       
-      const department = getSelectedDept();
-      if (!department) {
-        Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกฝ่ายที่สังกัดด้วยครับ', 'warning');
-        return;
-      }
-
-      Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      Swal.fire({ title: 'กำลังตรวจสอบข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       
       const payload = {
         userId: lineProfile.userId,
         displayName: lineProfile.displayName,
         username: document.getElementById('username').value,
-        pictureUrl: lineProfile.pictureUrl,
         name: document.getElementById('name').value,
         surname: document.getElementById('surname').value,
-        phone: document.getElementById('phone').value,
-        password: document.getElementById('password').value,
-        department: department
+        password: document.getElementById('password').value
       };
 
       try {
@@ -309,24 +280,72 @@
         const result = await res.json();
         
         if(result.success) {
-          Swal.fire({ 
-            icon: 'success', 
-            title: 'ลงทะเบียนสำเร็จ!', 
-            text: 'ระบบกำลังพาท่านไปหน้าเข้าสู่ระบบ', 
-            timer: 2000, 
-            showConfirmButton: false 
-          }).then(() => {
-            // 🎯 ลงทะเบียนสำเร็จ -> เด้งไปหน้า Login แทน
-            window.location.replace(LOGIN_URL);
-          });
-        } else if (result.error === "duplicate") {
-          // 🎯 กรณีชื่อซ้ำให้แจ้งเตือน
-          Swal.fire('ไม่สามารถลงทะเบียนได้', result.message, 'warning');
+          if (result.isDuplicate) {
+            // 🎯 กรณีชื่อซ้ำ: แจ้งเตือนว่ามีชื่อแล้ว และบังคับไปหน้า Login (ไม่เพิ่มแถวใหม่)
+            Swal.fire({ 
+              icon: 'info', 
+              title: 'มีข้อมูลบัญชีอยู่แล้ว', 
+              text: result.message, 
+              timer: 3500, 
+              showConfirmButton: true,
+              confirmButtonText: 'ไปหน้าเข้าสู่ระบบ'
+            }).then(() => {
+              showLogin(); 
+            });
+          } else {
+            // 🎯 กรณีคนใหม่: บันทึกข้อมูลสำเร็จ (ลงชีต Login) และให้ไปหน้า Login
+            Swal.fire({ 
+              icon: 'success', 
+              title: 'ลงทะเบียนสำเร็จ!', 
+              text: 'กรุณาเข้าสู่ระบบด้วย Username และ Password ที่คุณเพิ่งตั้ง', 
+              timer: 2500, 
+              showConfirmButton: false 
+            }).then(() => {
+              showLogin(); 
+            });
+          }
         } else {
           Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); 
         }
       } catch (e) { 
         Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error'); 
+      }
+    }
+
+    // 🌟 2. ยืนยันการเข้าสู่ระบบ
+    async function submitLogin(event) {
+      event.preventDefault();
+      
+      Swal.fire({ title: 'กำลังเข้าสู่ระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      
+      const payload = {
+        action: 'login',
+        username: document.getElementById('loginUsername').value,
+        password: document.getElementById('loginPassword').value,
+        userId: lineProfile.userId,          // 🎯 ส่ง userID ปัจจุบันไปอัปเดต
+        displayName: lineProfile.displayName // 🎯 ส่ง displayName ปัจจุบันไปอัปเดต
+      };
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
+        
+        if(result.success) {
+          // หากรหัสผ่านถูกต้อง (มีการบันทึกแถวใหม่ลงชีต Login ให้แล้วถ้ามีการเปลี่ยนไลน์)
+          Swal.fire({ 
+            icon: 'success', 
+            title: 'เข้าสู่ระบบสำเร็จ!', 
+            text: 'กำลังพาท่านไปหน้าแดชบอร์ด...', 
+            timer: 2000, 
+            showConfirmButton: false 
+          }).then(() => {
+            window.location.replace(DASHBOARD_URL + "?uid=" + result.uid);
+          });
+        } else {
+          Swal.fire('การเข้าสู่ระบบล้มเหลว', result.message || 'ข้อมูลไม่ถูกต้อง', 'error');
+        }
+      } catch (e) { 
+        Swal.fire('Error', 'เกิดข้อผิดพลาดในการตรวจสอบ', 'error'); 
       }
     }
   </script>
