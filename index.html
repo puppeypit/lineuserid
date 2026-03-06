@@ -221,11 +221,15 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🔴 1. API_URL = ลิงก์ของระบบฐานข้อมูลกลาง (สำหรับเช็คและบันทึก)
+    // 🔴 1. API_URL = ลิงก์ของระบบฐานข้อมูลกลาง
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // 🔴 2. DASHBOARD_URL = ลิงก์ของระบบรวม ที่จะวิ่งไปถ้าลงทะเบียนแล้ว (ระวัง: ห้ามนำลิงก์ API_URL หรือ GitHub มาใส่เด็ดขาด เพราะจะวนลูป)
+    // 🔴 2. DASHBOARD_URL = ลิงก์แดชบอร์ดสำหรับคนที่เคยลงทะเบียนแล้ว
     const DASHBOARD_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
+
+    // 🔴 3. LOGIN_URL = ลิงก์หน้า Login (สำหรับ User ใหม่ที่พึ่งลงทะเบียนเสร็จ)
+    // ⚠️ อย่าลืมแก้ลิงก์นี้ให้เป็นหน้า Login ของคุณครับ
+    const LOGIN_URL = "https://ลิงก์หน้า_Login_ของคุณ";
 
     function onlyOne(checkbox) {
       const checkboxes = document.querySelectorAll('.dept-checkbox');
@@ -239,7 +243,6 @@
       return checked ? checked.value : "";
     }
 
-    // ทำงานทันทีเมื่อเปิดลิงก์ LIFF
     window.onload = async function() {
       try {
         await liff.init({ liffId: LIFF_ID });
@@ -249,7 +252,6 @@
           return;
         } 
         
-        // ดึงข้อมูล LINE
         const profile = await liff.getProfile();
         lineProfile = { 
           userId: profile.userId, 
@@ -257,15 +259,12 @@
           pictureUrl: profile.pictureUrl 
         };
         
-        // ยิงไปถาม Database กลาง ว่าคนนี้เคยลงทะเบียนหรือยัง
         const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
         const result = await response.json();
         
         if (result.isRegistered) { 
-          // 🎯 ถ้าเคยลงทะเบียนแล้ว -> วิ่งไป Dashboard ทันที
           window.location.replace(DASHBOARD_URL + "?uid=" + profile.userId);
         } else {
-          // 🎯 ถ้ายังไม่เคยลงทะเบียน -> ซ่อนหน้าโหลด และโชว์หน้าฟอร์ม
           document.getElementById('loadingScreen').style.display = 'none';
           document.getElementById('mainContent').style.display = 'flex';
           
@@ -296,7 +295,7 @@
       const payload = {
         userId: lineProfile.userId,
         displayName: lineProfile.displayName,
-        username: document.getElementById('username').value, // 🎯 ดึงค่า username จากฟอร์มแทน
+        username: document.getElementById('username').value,
         pictureUrl: lineProfile.pictureUrl,
         name: document.getElementById('name').value,
         surname: document.getElementById('surname').value,
@@ -306,7 +305,6 @@
       };
 
       try {
-        // ยิงข้อมูลไปบันทึก
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         
@@ -314,16 +312,21 @@
           Swal.fire({ 
             icon: 'success', 
             title: 'ลงทะเบียนสำเร็จ!', 
-            text: 'ระบบกำลังพาท่านเข้าสู่หน้าแดชบอร์ด', 
+            text: 'ระบบกำลังพาท่านไปหน้าเข้าสู่ระบบ', 
             timer: 2000, 
             showConfirmButton: false 
           }).then(() => {
-            // บันทึกเสร็จ -> วิ่งไป Dashboard ทันที
-            window.location.replace(DASHBOARD_URL + "?uid=" + lineProfile.userId);
+            // 🎯 ลงทะเบียนสำเร็จ -> เด้งไปหน้า Login แทน
+            window.location.replace(LOGIN_URL);
           });
+        } else if (result.error === "duplicate") {
+          // 🎯 กรณีชื่อซ้ำให้แจ้งเตือน
+          Swal.fire('ไม่สามารถลงทะเบียนได้', result.message, 'warning');
+        } else {
+          Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); 
         }
       } catch (e) { 
-        Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); 
+        Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error'); 
       }
     }
   </script>
