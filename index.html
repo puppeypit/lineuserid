@@ -10,46 +10,10 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
-    body { 
-      font-family: 'Kanit', sans-serif; 
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      min-height: 100vh;
-    }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .input-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-    }
-    input:focus {
-      outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    }
-    input:disabled {
-      background-color: #f1f5f9;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-    .profile-img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: none;
-    }
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    body { font-family: 'Kanit', sans-serif; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); min-height: 100vh; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+    input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; }
   </style>
 </head>
 <body class="flex items-center justify-center p-4">
@@ -62,48 +26,38 @@
           <i class="fas fa-user-circle text-5xl opacity-50"></i>
         </div>
       </div>
-      <h2 class="text-2xl font-bold mb-1" id="displayName">กำลังโหลดข้อมูล...</h2>
-      <p class="text-indigo-100 text-sm">ลงทะเบียนเพื่อเข้าสู่ระบบสารสนเทศ</p>
+      <h2 class="text-2xl font-bold mb-1" id="displayName">กำลังโหลด...</h2>
+      <p class="text-indigo-100 text-sm">ลงทะเบียนเข้าใช้งานระบบกลาง</p>
     </div>
 
     <form onsubmit="submitForm(event)" class="p-8 space-y-5">
-      
       <div class="space-y-1">
-        <label class="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">ชื่อจริง</label>
+        <label class="text-xs font-bold text-slate-500 ml-1">ชื่อจริง</label>
         <div class="relative">
-          <i class="fas fa-user input-icon"></i>
-          <input type="text" id="name" required placeholder="ชื่อจริงของคุณ" disabled
-                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl transition-all">
+          <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="name" required placeholder="กรอกชื่อจริง" disabled class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
         </div>
       </div>
 
       <div class="space-y-1">
-        <label class="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">นามสกุล</label>
+        <label class="text-xs font-bold text-slate-500 ml-1">นามสกุล</label>
         <div class="relative">
-          <i class="fas fa-id-card input-icon"></i>
-          <input type="text" id="surname" required placeholder="นามสกุลของคุณ" disabled
-                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl transition-all">
+          <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="surname" required placeholder="กรอกนามสกุล" disabled class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
         </div>
       </div>
 
       <div class="space-y-1">
-        <label class="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">เบอร์โทรศัพท์</label>
+        <label class="text-xs font-bold text-slate-500 ml-1">เบอร์โทรศัพท์</label>
         <div class="relative">
-          <i class="fas fa-phone input-icon"></i>
-          <input type="tel" id="phone" required placeholder="08XXXXXXXX" maxlength="10" disabled
-                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl transition-all">
+          <i class="fas fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="tel" id="phone" required placeholder="08XXXXXXXX" maxlength="10" disabled class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
         </div>
       </div>
 
-      <button type="submit" id="submitBtn" disabled
-              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all transform active:scale-95 mt-4 flex items-center justify-center gap-2 text-lg">
-        <i class="fas fa-user-check"></i>
-        <span>ลงทะเบียนเข้าใช้งาน</span>
+      <button type="submit" id="submitBtn" disabled class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2">
+        <i class="fas fa-user-check"></i> ยืนยันลงทะเบียน
       </button>
-
-      <p class="text-center text-slate-400 text-xs mt-6">
-        <i class="fas fa-shield-alt mr-1"></i> ข้อมูลของคุณจะถูกใช้เพื่อการยืนยันตัวตนในระบบเท่านั้น
-      </p>
     </form>
   </div>
 
@@ -111,12 +65,12 @@
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
+    // 🔗 ตรวจสอบ URL นี้ให้ตรงกับที่ Deploy ล่าสุดครับ
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // ศูนย์รวมลิงก์ระบบทั้งหมด
     const SYSTEM_URLS = {
       "dashboard": API_URL, 
-      "calendar": "https://script.google.com/macros/s/AKfycbz_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
+      "calendar": "https://script.google.com/macros/s/AKfycbw_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
       "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec"
     };
 
@@ -124,45 +78,33 @@
       const urlParams = new URLSearchParams(window.location.search);
       const targetApp = urlParams.get('target') || "dashboard";
       const action = urlParams.get('action');
-      
-      const redirectUrl = SYSTEM_URLS[targetApp] ? SYSTEM_URLS[targetApp] : SYSTEM_URLS["dashboard"];
+      const redirectUrl = SYSTEM_URLS[targetApp] || SYSTEM_URLS["dashboard"];
 
-      // 1. ตรวจสอบการ Logout
-      if (action === 'logout') {
-          localStorage.removeItem('sso_user_uid');
-          window.history.replaceState({}, document.title, window.location.pathname);
-      }
+      if (action === 'logout') { localStorage.removeItem('sso_user_uid'); }
 
-      // 2. ระบบตรวจสอบ Cache
       const cachedUid = localStorage.getItem('sso_user_uid');
-      if (cachedUid) {
-          window.top.location.replace(redirectUrl + "?uid=" + cachedUid);
-          return; 
-      }
+      if (cachedUid) { window.top.location.replace(redirectUrl + "?uid=" + cachedUid); return; }
 
-      // 3. เชื่อมต่อ LIFF
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) { 
-            liff.login({ redirectUri: window.location.href }); 
-        } else {
+        if (!liff.isLoggedIn()) { liff.login(); } else {
           const profile = await liff.getProfile();
-          lineProfile = { userId: profile.userId, displayName: profile.displayName, language: liff.getLanguage(), pictureUrl: profile.pictureUrl };
+          lineProfile = { userId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl };
+          
           const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
           const result = await response.json();
           
           if (result.isRegistered) { 
-             localStorage.setItem('sso_user_uid', profile.userId);
-             window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
+            localStorage.setItem('sso_user_uid', profile.userId);
+            window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
           } else {
-            // ปลดล็อกฟอร์มให้ลงทะเบียน
-            ['name', 'surname', 'phone'].forEach(id => { document.getElementById(id).disabled = false; });
+            ['name', 'surname', 'phone'].forEach(id => document.getElementById(id).disabled = false);
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('displayName').innerText = profile.displayName;
-            if(profile.pictureUrl) { 
-                document.getElementById('profileImage').src = profile.pictureUrl; 
-                document.getElementById('profileImage').style.display = 'inline-block';
-                document.getElementById('imagePlaceholder').style.display = 'none';
+            if(profile.pictureUrl) {
+              document.getElementById('profileImage').src = profile.pictureUrl;
+              document.getElementById('profileImage').style.display = 'inline-block';
+              document.getElementById('imagePlaceholder').style.display = 'none';
             }
           }
         }
@@ -172,27 +114,28 @@
     async function submitForm(event) {
       event.preventDefault();
       Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      
       const payload = {
-        userId: lineProfile.userId, displayName: lineProfile.displayName, language: lineProfile.language, pictureUrl: lineProfile.pictureUrl,
-        name: document.getElementById('name').value, surname: document.getElementById('surname').value, phone: document.getElementById('phone').value, status: "Active"
+        userId: lineProfile.userId,
+        displayName: lineProfile.displayName,
+        name: document.getElementById('name').value,
+        surname: document.getElementById('surname').value,
+        phone: document.getElementById('phone').value
       };
+
       try {
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         if(result.success) {
-          Swal.fire({ icon: 'success', title: 'ลงทะเบียนสำเร็จ!', timer: 1500, showConfirmButton: false })
-          .then(() => {
-              localStorage.setItem('sso_user_uid', lineProfile.userId);
-              const urlParams = new URLSearchParams(window.location.search);
-              const targetApp = urlParams.get('target') || "dashboard";
-              const redirectUrl = SYSTEM_URLS[targetApp] ? SYSTEM_URLS[targetApp] : SYSTEM_URLS["dashboard"];
-              window.top.location.replace(redirectUrl + "?uid=" + lineProfile.userId);
+          Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false }).then(() => {
+            localStorage.setItem('sso_user_uid', lineProfile.userId);
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetApp = urlParams.get('target') || "dashboard";
+            const redirectUrl = SYSTEM_URLS[targetApp] || SYSTEM_URLS["dashboard"];
+            window.top.location.replace(redirectUrl + "?uid=" + lineProfile.userId);
           });
         }
-      } catch (e) { 
-        console.error(e); 
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
-      }
+      } catch (e) { Swal.fire('Error', 'บันทึกข้อมูลไม่สำเร็จ', 'error'); }
     }
   </script>
 </body>
