@@ -136,6 +136,14 @@
 
       <form id="regForm" onsubmit="submitForm(event)" class="space-y-6">
         
+        <div class="flex items-center gap-3">
+          <label class="w-16 text-sm font-semibold text-slate-500">Username</label>
+          <div class="input-pill">
+            <i class="fa-solid fa-user text-sky-300 mr-3"></i>
+            <input type="text" id="username" required placeholder="ระบุ Username สำหรับเข้าระบบ" class="bg-transparent w-full outline-none text-sm text-slate-600">
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center gap-3">
             <label class="w-16 text-sm font-semibold text-slate-500">ชื่อจริง</label>
@@ -246,7 +254,6 @@
         lineProfile = { 
           userId: profile.userId, 
           displayName: profile.displayName, 
-          language: liff.getLanguage(), 
           pictureUrl: profile.pictureUrl 
         };
         
@@ -289,7 +296,7 @@
       const payload = {
         userId: lineProfile.userId,
         displayName: lineProfile.displayName,
-        language: lineProfile.language,
+        username: document.getElementById('username').value, // 🎯 ดึงค่า username จากฟอร์มแทน
         pictureUrl: lineProfile.pictureUrl,
         name: document.getElementById('name').value,
         surname: document.getElementById('surname').value,
@@ -322,4 +329,3 @@
   </script>
 </body>
 </html>
-
