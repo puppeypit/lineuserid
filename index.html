@@ -3,26 +3,107 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ลงทะเบียนสมาชิก</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>ลงทะเบียนเข้าใช้งานระบบ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <style>
-    body { font-family: 'Kanit', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #ffffff; }
-    .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 380px; text-align: center; }
-    input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid #22c55e; display:none; }
+    body { 
+      font-family: 'Kanit', sans-serif; 
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    input:disabled {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
-<body>
-  <div class="container">
-    <img id="profileImage" class="profile-img" src="">
-    <h3 id="displayName">กำลังโหลดข้อมูล...</h3>
-    <form onsubmit="submitForm(event)">
-      <input type="text" id="name" required placeholder="ชื่อจริง" disabled>
-      <input type="text" id="surname" required placeholder="นามสกุล" disabled>
-      <input type="tel" id="phone" required placeholder="เบอร์โทรศัพท์" maxlength="10" disabled>
-      <button type="submit" id="submitBtn" disabled>ลงทะเบียน</button>
+<body class="flex items-center justify-center p-4">
+
+  <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+    <div class="bg-indigo-600 p-8 text-white text-center relative">
+      <div class="flex justify-center mb-4">
+        <img id="profileImage" class="profile-img" src="">
+        <div id="imagePlaceholder" class="w-24 h-24 bg-indigo-500 rounded-full flex items-center justify-center border-4 border-white/20">
+          <i class="fas fa-user-circle text-5xl opacity-50"></i>
+        </div>
+      </div>
+      <h2 class="text-2xl font-bold mb-1" id="displayName">กำลังโหลดข้อมูล...</h2>
+      <p class="text-indigo-100 text-sm">ลงทะเบียนเพื่อเข้าสู่ระบบสารสนเทศ</p>
+    </div>
+
+    <form onsubmit="submitForm(event)" class="p-8 space-y-5">
+      
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">ชื่อจริง</label>
+        <div class="relative">
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" id="name" required placeholder="ชื่อจริงของคุณ" disabled
+                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl transition-all">
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">นามสกุล</label>
+        <div class="relative">
+          <i class="fas fa-id-card input-icon"></i>
+          <input type="text" id="surname" required placeholder="นามสกุลของคุณ" disabled
+                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl transition-all">
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">เบอร์โทรศัพท์</label>
+        <div class="relative">
+          <i class="fas fa-phone input-icon"></i>
+          <input type="tel" id="phone" required placeholder="08XXXXXXXX" maxlength="10" disabled
+                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl transition-all">
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" disabled
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all transform active:scale-95 mt-4 flex items-center justify-center gap-2 text-lg">
+        <i class="fas fa-user-check"></i>
+        <span>ลงทะเบียนเข้าใช้งาน</span>
+      </button>
+
+      <p class="text-center text-slate-400 text-xs mt-6">
+        <i class="fas fa-shield-alt mr-1"></i> ข้อมูลของคุณจะถูกใช้เพื่อการยืนยันตัวตนในระบบเท่านั้น
+      </p>
     </form>
   </div>
 
@@ -32,11 +113,11 @@
     const LIFF_ID = "2009229714-1R09rohG";
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // 🌟 ศูนย์รวมลิงก์ระบบทั้งหมด (จัดการง่ายขึ้น) 🌟
+    // ศูนย์รวมลิงก์ระบบทั้งหมด
     const SYSTEM_URLS = {
       "dashboard": API_URL, 
       "calendar": "https://script.google.com/macros/s/AKfycbz_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
-      "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec" // <--- นำลิงก์ระบบแจ้งซ่อมมาใส่ตรงนี้ได้เลย
+      "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec"
     };
 
     window.onload = async function() {
@@ -44,23 +125,22 @@
       const targetApp = urlParams.get('target') || "dashboard";
       const action = urlParams.get('action');
       
-      // หา URL เป้าหมาย ถ้าพิมพ์เป้าหมายผิดจะเด้งกลับไปที่ dashboard
       const redirectUrl = SYSTEM_URLS[targetApp] ? SYSTEM_URLS[targetApp] : SYSTEM_URLS["dashboard"];
 
-      // 1. ตรวจสอบว่ามีคำสั่งให้ออกจากระบบ (Logout) หรือไม่
+      // 1. ตรวจสอบการ Logout
       if (action === 'logout') {
           localStorage.removeItem('sso_user_uid');
           window.history.replaceState({}, document.title, window.location.pathname);
       }
 
-      // 2. ✨ ระบบตรวจสอบ Cache: ถ้าเคยลงทะเบียน/ล็อกอินแล้ว ทะลุเข้าเว็บเป้าหมายทันที ✨
+      // 2. ระบบตรวจสอบ Cache
       const cachedUid = localStorage.getItem('sso_user_uid');
       if (cachedUid) {
           window.top.location.replace(redirectUrl + "?uid=" + cachedUid);
-          return; // หยุดการทำงานส่วนที่เหลือ ไม่ต้องโหลด LIFF 
+          return; 
       }
 
-      // 3. ถ้าไม่มี Cache (เข้าครั้งแรก) ให้เชื่อมต่อ LIFF ตามปกติ
+      // 3. เชื่อมต่อ LIFF
       try {
         await liff.init({ liffId: LIFF_ID });
         if (!liff.isLoggedIn()) { 
@@ -72,15 +152,18 @@
           const result = await response.json();
           
           if (result.isRegistered) { 
-             // ลงทะเบียนไว้แล้ว -> จำรหัสใส่ Cache แล้วส่งไปเป้าหมาย
              localStorage.setItem('sso_user_uid', profile.userId);
              window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
           } else {
-             // ปลดล็อกฟอร์มให้ลงทะเบียน
+            // ปลดล็อกฟอร์มให้ลงทะเบียน
             ['name', 'surname', 'phone'].forEach(id => { document.getElementById(id).disabled = false; });
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('displayName').innerText = profile.displayName;
-            if(profile.pictureUrl) { document.getElementById('profileImage').src = profile.pictureUrl; document.getElementById('profileImage').style.display = 'inline-block'; }
+            if(profile.pictureUrl) { 
+                document.getElementById('profileImage').src = profile.pictureUrl; 
+                document.getElementById('profileImage').style.display = 'inline-block';
+                document.getElementById('imagePlaceholder').style.display = 'none';
+            }
           }
         }
       } catch (err) { console.error(err); }
@@ -97,26 +180,20 @@
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         if(result.success) {
-          Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false })
+          Swal.fire({ icon: 'success', title: 'ลงทะเบียนสำเร็จ!', timer: 1500, showConfirmButton: false })
           .then(() => {
-              // เมื่อบันทึกสำเร็จ -> จำรหัสใส่ Cache แล้วส่งไปเป้าหมาย
               localStorage.setItem('sso_user_uid', lineProfile.userId);
               const urlParams = new URLSearchParams(window.location.search);
               const targetApp = urlParams.get('target') || "dashboard";
               const redirectUrl = SYSTEM_URLS[targetApp] ? SYSTEM_URLS[targetApp] : SYSTEM_URLS["dashboard"];
-              
               window.top.location.replace(redirectUrl + "?uid=" + lineProfile.userId);
           });
         }
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error(e); 
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+      }
     }
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
