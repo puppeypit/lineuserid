@@ -17,7 +17,7 @@
 <body>
   <div class="container">
     <img id="profileImage" class="profile-img" src="">
-    <h3 id="displayName">กำลังโหลด...</h3>
+    <h3 id="displayName">กำลังโหลดข้อมูล...</h3>
     <form onsubmit="submitForm(event)">
       <input type="text" id="name" required placeholder="ชื่อจริง" disabled>
       <input type="text" id="surname" required placeholder="นามสกุล" disabled>
@@ -32,18 +32,38 @@
     const LIFF_ID = "2009229714-1R09rohG";
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // 🌟 ดึงค่าเป้าหมายจาก URL (ว่าต้องการให้ส่งกลับไปหน้าไหน)
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetApp = urlParams.get('target');
-    
-    // ⚠️ นำ Web App URL ของปฏิทินมาใส่ตรงนี้
-    const CALENDAR_URL = "https://script.google.com/macros/s/AKfycbz_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec"; 
+    // 🌟 ศูนย์รวมลิงก์ระบบทั้งหมด (จัดการง่ายขึ้น) 🌟
+    const SYSTEM_URLS = {
+      "dashboard": API_URL, 
+      "calendar": "https://script.google.com/macros/s/AKfycbz_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
+      "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec" // <--- นำลิงก์ระบบแจ้งซ่อมมาใส่ตรงนี้ได้เลย
+    };
 
     window.onload = async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetApp = urlParams.get('target') || "dashboard";
+      const action = urlParams.get('action');
+      
+      // หา URL เป้าหมาย ถ้าพิมพ์เป้าหมายผิดจะเด้งกลับไปที่ dashboard
+      const redirectUrl = SYSTEM_URLS[targetApp] ? SYSTEM_URLS[targetApp] : SYSTEM_URLS["dashboard"];
+
+      // 1. ตรวจสอบว่ามีคำสั่งให้ออกจากระบบ (Logout) หรือไม่
+      if (action === 'logout') {
+          localStorage.removeItem('sso_user_uid');
+          window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // 2. ✨ ระบบตรวจสอบ Cache: ถ้าเคยลงทะเบียน/ล็อกอินแล้ว ทะลุเข้าเว็บเป้าหมายทันที ✨
+      const cachedUid = localStorage.getItem('sso_user_uid');
+      if (cachedUid) {
+          window.top.location.replace(redirectUrl + "?uid=" + cachedUid);
+          return; // หยุดการทำงานส่วนที่เหลือ ไม่ต้องโหลด LIFF 
+      }
+
+      // 3. ถ้าไม่มี Cache (เข้าครั้งแรก) ให้เชื่อมต่อ LIFF ตามปกติ
       try {
         await liff.init({ liffId: LIFF_ID });
         if (!liff.isLoggedIn()) { 
-            // ใส่ redirectUri เพื่อให้พารามิเตอร์ ?target=calendar ไม่หายไปตอนล็อกอิน
             liff.login({ redirectUri: window.location.href }); 
         } else {
           const profile = await liff.getProfile();
@@ -52,14 +72,11 @@
           const result = await response.json();
           
           if (result.isRegistered) { 
-             // ถ้าระบุว่ามาจาก Calendar ให้ตีกลับไปหน้า Calendar
-             if (targetApp === 'calendar') {
-                 window.top.location.replace(CALENDAR_URL + "?uid=" + profile.userId);
-             } else {
-                 // ถ้าไม่ได้ระบุ ก็ไปหน้า Dashboard หลักตามปกติ
-                 window.top.location.replace(result.redirectUrl + "?uid=" + profile.userId); 
-             }
+             // ลงทะเบียนไว้แล้ว -> จำรหัสใส่ Cache แล้วส่งไปเป้าหมาย
+             localStorage.setItem('sso_user_uid', profile.userId);
+             window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
           } else {
+             // ปลดล็อกฟอร์มให้ลงทะเบียน
             ['name', 'surname', 'phone'].forEach(id => { document.getElementById(id).disabled = false; });
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('displayName').innerText = profile.displayName;
@@ -82,11 +99,13 @@
         if(result.success) {
           Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false })
           .then(() => {
-              if (targetApp === 'calendar') {
-                 window.top.location.replace(CALENDAR_URL + "?uid=" + lineProfile.userId);
-              } else {
-                 window.top.location.replace(result.redirectUrl + "?uid=" + lineProfile.userId);
-              }
+              // เมื่อบันทึกสำเร็จ -> จำรหัสใส่ Cache แล้วส่งไปเป้าหมาย
+              localStorage.setItem('sso_user_uid', lineProfile.userId);
+              const urlParams = new URLSearchParams(window.location.search);
+              const targetApp = urlParams.get('target') || "dashboard";
+              const redirectUrl = SYSTEM_URLS[targetApp] ? SYSTEM_URLS[targetApp] : SYSTEM_URLS["dashboard"];
+              
+              window.top.location.replace(redirectUrl + "?uid=" + lineProfile.userId);
           });
         }
       } catch (e) { console.error(e); }
