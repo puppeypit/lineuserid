@@ -45,7 +45,6 @@
 
     .input-pill i { transition: all 0.3s ease; }
     .input-pill:focus-within i { color: #0ea5e9; transform: scale(1.15); }
-    .input-pill input:disabled { background-color: transparent; cursor: not-allowed; opacity: 0.6; }
 
     .dept-checkbox:checked + label {
       background: linear-gradient(135deg, #38bdf8, #10b981);
@@ -79,7 +78,6 @@
       transform: scale(1.02);
       box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
     }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .line-profile-img {
       width: 80px;
@@ -88,100 +86,126 @@
       object-fit: cover;
       border: 4px solid white;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: none;
     }
+
+    /* --- Loading Screen Styles --- */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background-color: #f0f9ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .spinner {
+      border: 4px solid rgba(56, 189, 248, 0.2);
+      border-left-color: #0ea5e9;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-  <div class="minimal-card w-full max-w-2xl p-8 md:p-12 my-4">
-    
-    <div class="flex flex-col md:flex-row items-center gap-6 mb-8 border-b border-slate-50 pb-8 text-center md:text-left relative">
-      <div class="relative shrink-0">
-        <div class="p-1 bg-gradient-to-tr from-sky-400 to-emerald-400 rounded-full shadow-md" id="imgWrapper">
-          <img src="https://cdn-icons-png.flaticon.com/512/4333/4333609.png" id="defaultIcon" class="w-20 h-20 rounded-full object-cover border-4 border-white">
-          <img id="profileImage" class="line-profile-img absolute top-1 left-1">
-        </div>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold text-slate-700">ลงทะเบียนเจ้าหน้าที่ สอ.กวก.</h2>
-        <p id="displayName" class="text-slate-400 font-medium text-sm mt-1">กำลังเชื่อมต่อระบบ...</p>
-      </div>
-    </div>
+  <div id="loadingScreen">
+    <div class="spinner mb-6"></div>
+    <h2 class="text-xl font-bold text-slate-700">กำลังตรวจสอบสิทธิ์การเข้าถึง...</h2>
+    <p class="text-slate-400 text-sm mt-2">กรุณารอสักครู่</p>
+  </div>
 
-    <form id="regForm" onsubmit="submitForm(event)" class="space-y-6">
+  <div id="mainContent" class="min-h-screen flex items-center justify-center p-4" style="display: none;">
+    <div class="minimal-card w-full max-w-2xl p-8 md:p-12 my-4">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="flex items-center gap-3">
-          <label class="w-16 text-sm font-semibold text-slate-500">ชื่อจริง</label>
-          <div class="input-pill">
-            <i class="fa-regular fa-face-smile text-sky-300 mr-3"></i>
-            <input type="text" id="name" required placeholder="ระบุชื่อจริง" disabled class="bg-transparent w-full outline-none text-sm text-slate-600">
+      <div class="flex flex-col md:flex-row items-center gap-6 mb-8 border-b border-slate-50 pb-8 text-center md:text-left relative">
+        <div class="relative shrink-0">
+          <div class="p-1 bg-gradient-to-tr from-sky-400 to-emerald-400 rounded-full shadow-md" id="imgWrapper">
+            <img id="profileImage" class="line-profile-img">
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <label class="w-16 md:w-14 text-sm font-semibold text-slate-500">นามสกุล</label>
-          <div class="input-pill">
-            <i class="fa-regular fa-star text-sky-300 mr-3"></i>
-            <input type="text" id="surname" required placeholder="ระบุนามสกุล" disabled class="bg-transparent w-full outline-none text-sm text-slate-600">
-          </div>
+        <div>
+          <h2 class="text-2xl font-bold text-slate-700">ลงทะเบียนเจ้าหน้าที่ สอ.กวก.</h2>
+          <p id="displayName" class="text-slate-400 font-medium text-sm mt-1">กรุณาระบุข้อมูลส่วนตัวเพื่อเข้าใช้งานระบบ</p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="flex items-center gap-3">
-          <label class="w-16 text-sm font-semibold text-slate-500">โทรศัพท์</label>
-          <div class="input-pill">
-            <i class="fa-solid fa-phone text-sky-300 mr-3"></i>
-            <input type="tel" id="phone" required placeholder="08XXXXXXXX" maxlength="10" disabled class="bg-transparent w-full outline-none text-sm text-slate-600">
+      <form id="regForm" onsubmit="submitForm(event)" class="space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex items-center gap-3">
+            <label class="w-16 text-sm font-semibold text-slate-500">ชื่อจริง</label>
+            <div class="input-pill">
+              <i class="fa-regular fa-face-smile text-sky-300 mr-3"></i>
+              <input type="text" id="name" required placeholder="ระบุชื่อจริง" class="bg-transparent w-full outline-none text-sm text-slate-600">
+            </div>
           </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <label class="w-16 md:w-14 text-sm font-semibold text-slate-500">Pass</label>
-          <div class="input-pill">
-            <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
-            <input type="password" id="password" required placeholder="Password" disabled class="bg-transparent w-full outline-none text-sm text-slate-600">
-          </div>
-        </div>
-      </div>
-
-      <div class="pt-4 border-t border-slate-50 mt-4">
-        <div class="flex flex-col md:flex-row gap-4">
-          <label class="w-full md:w-16 text-sm font-semibold text-slate-500 md:mt-2">ฝ่าย</label>
-          <div class="flex-1">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <script>
-                const depts = ["ฝ่ายอำนวยการ", "สินเชื่อ", "การเงิน", "บัญชี", "สมาชิกสัมพันธ์", "สารสนเทศ", "ผู้ช่วยผู้จัดการ", "ผู้จัดการ"];
-                depts.forEach((dept, index) => {
-                  document.write(`
-                    <div>
-                      <input type="checkbox" id="dept_${index}" value="${dept}" class="dept-checkbox" onclick="onlyOne(this)" disabled>
-                      <label for="dept_${index}" class="dept-label shadow-sm">${dept}</label>
-                    </div>
-                  `);
-                });
-              </script>
+          <div class="flex items-center gap-3">
+            <label class="w-16 md:w-14 text-sm font-semibold text-slate-500">นามสกุล</label>
+            <div class="input-pill">
+              <i class="fa-regular fa-star text-sky-300 mr-3"></i>
+              <input type="text" id="surname" required placeholder="ระบุนามสกุล" class="bg-transparent w-full outline-none text-sm text-slate-600">
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="pt-6">
-        <button type="submit" id="submitBtn" disabled 
-                class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
-          <span>ยืนยันข้อมูลเจ้าหน้าที่</span>
-          <i class="fa-solid fa-check-circle"></i>
-        </button>
-      </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex items-center gap-3">
+            <label class="w-16 text-sm font-semibold text-slate-500">โทรศัพท์</label>
+            <div class="input-pill">
+              <i class="fa-solid fa-phone text-sky-300 mr-3"></i>
+              <input type="tel" id="phone" required placeholder="08XXXXXXXX" maxlength="10" class="bg-transparent w-full outline-none text-sm text-slate-600">
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <label class="w-16 md:w-14 text-sm font-semibold text-slate-500">Pass</label>
+            <div class="input-pill">
+              <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
+              <input type="password" id="password" required placeholder="Password" class="bg-transparent w-full outline-none text-sm text-slate-600">
+            </div>
+          </div>
+        </div>
 
-      <div class="pt-8 border-t border-slate-50 text-center">
-        <p class="text-[11px] text-slate-400 font-medium tracking-wide uppercase">
-          2026 ฝ่ายสารสนเทศ | สหกรณ์ออมทรัพย์กรมวิชาการเกษตรจำกัด
-        </p>
-      </div>
+        <div class="pt-4 border-t border-slate-50 mt-4">
+          <div class="flex flex-col md:flex-row gap-4">
+            <label class="w-full md:w-16 text-sm font-semibold text-slate-500 md:mt-2">ฝ่าย</label>
+            <div class="flex-1">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <script>
+                  const depts = ["ฝ่ายอำนวยการ", "สินเชื่อ", "การเงิน", "บัญชี", "สมาชิกสัมพันธ์", "สารสนเทศ", "ผู้ช่วยผู้จัดการ", "ผู้จัดการ"];
+                  depts.forEach((dept, index) => {
+                    document.write(`
+                      <div>
+                        <input type="checkbox" id="dept_${index}" value="${dept}" class="dept-checkbox" onclick="onlyOne(this)">
+                        <label for="dept_${index}" class="dept-label shadow-sm">${dept}</label>
+                      </div>
+                    `);
+                  });
+                </script>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    </form>
+        <div class="pt-6">
+          <button type="submit" id="submitBtn" class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
+            <span>ยืนยันข้อมูลเจ้าหน้าที่</span>
+            <i class="fa-solid fa-check-circle"></i>
+          </button>
+        </div>
+
+        <div class="pt-8 border-t border-slate-50 text-center">
+          <p class="text-[11px] text-slate-400 font-medium tracking-wide uppercase">
+            2026 ฝ่ายสารสนเทศ | สหกรณ์ออมทรัพย์กรมวิชาการเกษตรจำกัด
+          </p>
+        </div>
+
+      </form>
+    </div>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -189,17 +213,11 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🌟 API_URL คือลิงก์ของ "ระบบลงทะเบียน/ฐานข้อมูลกลาง"
+    // 🔴 1. API_URL = ลิงก์ของระบบฐานข้อมูลกลาง (สำหรับเช็คและบันทึก)
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // 🌟 SYSTEM_URLS คือลิงก์ "หน้าเว็บปลายทาง" ที่ต้องการส่งไปเมื่อเช็คสิทธิ์ผ่านแล้ว
-    const SYSTEM_URLS = {
-      // ✅ แก้ไขแล้ว: นำลิงก์ Web App หน้า Dashboard ของจริงมาใส่ให้แล้วครับ จะได้ไม่ชนกับหน้าลงทะเบียน
-      "dashboard": "https://script.google.com/macros/s/AKfycbwaduenDoCUDDSnY0LqISiOOdqjZKrxdP1_6GwRTvn-69flLDYsg4v0rhHJHndFuui4/exec", 
-      
-      "calendar": "https://script.google.com/macros/s/AKfycbw_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec",
-      "repair": "https://script.google.com/macros/s/AKfycbziCgNV-fJ282jjmqvxllOvI8V1WO1nQY7KmdR7KSiUxk_P7Oi4bXVWb8-pGD943siy/exec"
-    };
+    // 🔴 2. DASHBOARD_URL = ลิงก์ของระบบรวม ที่จะวิ่งไปถ้าลงทะเบียนแล้ว (ระวัง: ห้ามนำลิงก์ API_URL หรือ GitHub มาใส่เด็ดขาด เพราะจะวนลูป)
+    const DASHBOARD_URL = "https://script.google.com/macros/s/ใส่ลิงก์หน้า_Dashboard_ของจริงที่นี่/exec";
 
     function onlyOne(checkbox) {
       const checkboxes = document.querySelectorAll('.dept-checkbox');
@@ -213,45 +231,48 @@
       return checked ? checked.value : "";
     }
 
+    // ทำงานทันทีเมื่อเปิดลิงก์ LIFF
     window.onload = async function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const targetApp = urlParams.get('target') || "dashboard";
-      const redirectUrl = SYSTEM_URLS[targetApp] || SYSTEM_URLS["dashboard"];
-
-      if (urlParams.get('action') === 'logout') { localStorage.removeItem('sso_user_uid'); }
-
-      const cachedUid = localStorage.getItem('sso_user_uid');
-      if (cachedUid) { 
-          window.top.location.replace(redirectUrl + "?uid=" + cachedUid); 
-          return; 
-      }
-
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) { liff.login(); } else {
-          const profile = await liff.getProfile();
-          lineProfile = { userId: profile.userId, displayName: profile.displayName, language: liff.getLanguage(), pictureUrl: profile.pictureUrl };
+        
+        if (!liff.isLoggedIn()) { 
+          liff.login(); 
+          return;
+        } 
+        
+        // ดึงข้อมูล LINE
+        const profile = await liff.getProfile();
+        lineProfile = { 
+          userId: profile.userId, 
+          displayName: profile.displayName, 
+          language: liff.getLanguage(), 
+          pictureUrl: profile.pictureUrl 
+        };
+        
+        // ยิงไปถาม Database กลาง ว่าคนนี้เคยลงทะเบียนหรือยัง
+        const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
+        const result = await response.json();
+        
+        if (result.isRegistered) { 
+          // 🎯 ถ้าเคยลงทะเบียนแล้ว -> วิ่งไป Dashboard ทันที
+          window.location.replace(DASHBOARD_URL + "?uid=" + profile.userId);
+        } else {
+          // 🎯 ถ้ายังไม่เคยลงทะเบียน -> ซ่อนหน้าโหลด และโชว์หน้าฟอร์ม
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'flex';
           
-          const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
-          const result = await response.json();
-          
-          if (result.isRegistered) { 
-            localStorage.setItem('sso_user_uid', profile.userId);
-            window.top.location.replace(redirectUrl + "?uid=" + profile.userId);
-          } else {
-            ['name', 'surname', 'phone', 'password'].forEach(id => document.getElementById(id).disabled = false);
-            document.querySelectorAll('.dept-checkbox').forEach(cb => cb.disabled = false);
-            document.getElementById('submitBtn').disabled = false;
-            
-            document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
-            if(profile.pictureUrl) {
-              document.getElementById('profileImage').src = profile.pictureUrl;
-              document.getElementById('profileImage').style.display = 'block';
-              document.getElementById('defaultIcon').style.display = 'none';
-            }
+          document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
+          if(profile.pictureUrl) {
+            const imgEl = document.getElementById('profileImage');
+            imgEl.src = profile.pictureUrl;
+            imgEl.style.display = 'block';
           }
         }
-      } catch (err) { console.error(err); }
+      } catch (err) { 
+        console.error(err);
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+      }
     };
 
     async function submitForm(event) {
@@ -278,19 +299,25 @@
       };
 
       try {
+        // ยิงข้อมูลไปบันทึก
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         
         if(result.success) {
-          Swal.fire({ icon: 'success', title: 'ลงทะเบียนสำเร็จ!', text: 'กำลังพาท่านเข้าสู่ระบบ', timer: 2000, showConfirmButton: false }).then(() => {
-            localStorage.setItem('sso_user_uid', lineProfile.userId);
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetApp = urlParams.get('target') || "dashboard";
-            const redirectUrl = SYSTEM_URLS[targetApp] || SYSTEM_URLS["dashboard"];
-            window.top.location.replace(redirectUrl + "?uid=" + lineProfile.userId);
+          Swal.fire({ 
+            icon: 'success', 
+            title: 'ลงทะเบียนสำเร็จ!', 
+            text: 'ระบบกำลังพาท่านเข้าสู่หน้าแดชบอร์ด', 
+            timer: 2000, 
+            showConfirmButton: false 
+          }).then(() => {
+            // บันทึกเสร็จ -> วิ่งไป Dashboard ทันที
+            window.location.replace(DASHBOARD_URL + "?uid=" + lineProfile.userId);
           });
         }
-      } catch (e) { Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); }
+      } catch (e) { 
+        Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); 
+      }
     }
   </script>
 </body>
