@@ -4,349 +4,112 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ระบบเจ้าหน้าที่ สอ.กวก.</title>
-  
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
   <style>
-    body { 
-      font-family: 'Kanit', sans-serif; 
-      background-color: #f0f9ff;
-      background-image: radial-gradient(#e0f2fe 1px, transparent 1px);
-      background-size: 20px 20px;
-    }
-    .minimal-card {
-      background: #ffffff;
-      border: 2px solid #f1f5f9;
-      border-radius: 40px;
-      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
-    }
-    .input-pill {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      padding: 0.65rem 1.25rem;
-      background-color: #f8fafc;
-      border: 2px solid #f1f5f9;
-      border-radius: 9999px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .input-pill:focus-within {
-      border-color: #38bdf8;
-      background-color: #ffffff;
-      box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.15);
-      transform: translateY(-2px);
-    }
-    .input-pill i { transition: all 0.3s ease; }
-    .input-pill:focus-within i { color: #0ea5e9; transform: scale(1.15); }
-
-    .btn-submit {
-      background: linear-gradient(to right, #0ea5e9, #10b981);
-      transition: all 0.3s ease;
-    }
-    .btn-submit:hover:not(:disabled) {
-      transform: scale(1.02);
-      box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
-    }
-    .line-profile-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    #loadingScreen {
-      position: fixed;
-      inset: 0;
-      background-color: #f0f9ff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-    .spinner {
-      border: 4px solid rgba(56, 189, 248, 0.2);
-      border-left-color: #0ea5e9;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
+    .minimal-card { background: white; border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    .input-pill { display: flex; align-items: center; padding: 0.75rem 1.25rem; background: #f1f5f9; border-radius: 9999px; border: 2px solid transparent; transition: 0.3s; }
+    .input-pill:focus-within { border-color: #3b82f6; background: white; }
+    .btn-submit { background: linear-gradient(90deg, #3b82f6, #10b981); color: white; font-weight: bold; border-radius: 9999px; transition: 0.3s; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.3); }
   </style>
 </head>
+<body class="min-h-screen flex items-center justify-center p-4">
 
-<body>
-
-  <div id="loadingScreen">
-    <div class="spinner mb-6"></div>
-    <h2 class="text-xl font-bold text-slate-700">กำลังตรวจสอบสิทธิ์การเข้าถึง...</h2>
-    <p class="text-slate-400 text-sm mt-2">กรุณารอสักครู่</p>
+  <div id="loadingScreen" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    <p class="mt-4 font-medium text-slate-600">กำลังประมวลผล...</p>
   </div>
 
-  <div id="registerContent" class="min-h-screen flex items-center justify-center p-4" style="display: none;">
-    <div class="minimal-card w-full max-w-2xl p-8 md:p-12 my-4">
-      
-      <div class="flex flex-col md:flex-row items-center gap-6 mb-8 border-b border-slate-50 pb-8 text-center md:text-left relative">
-        <div class="relative shrink-0">
-          <div class="p-1 bg-gradient-to-tr from-sky-400 to-emerald-400 rounded-full shadow-md" id="imgWrapper">
-            <img id="profileImage" class="line-profile-img">
-          </div>
-        </div>
-        <div>
-          <h2 class="text-2xl font-bold text-slate-700">ลงทะเบียนบัญชีใหม่</h2>
-          <p id="displayName" class="text-slate-400 font-medium text-sm mt-1">กรุณาระบุข้อมูลเพื่อเข้าใช้งานระบบ</p>
-        </div>
-      </div>
-
-      <form id="regForm" onsubmit="submitForm(event)" class="space-y-6">
-        <div class="flex items-center gap-3">
-          <label class="w-16 text-sm font-semibold text-slate-500">Username</label>
-          <div class="input-pill">
-            <i class="fa-solid fa-user text-sky-300 mr-3"></i>
-            <input type="text" id="username" required placeholder="ตั้ง Username สำหรับเข้าระบบ" class="bg-transparent w-full outline-none text-sm text-slate-600">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="flex items-center gap-3">
-            <label class="w-16 text-sm font-semibold text-slate-500">ชื่อจริง</label>
-            <div class="input-pill">
-              <i class="fa-regular fa-face-smile text-sky-300 mr-3"></i>
-              <input type="text" id="name" required placeholder="ระบุชื่อจริง" class="bg-transparent w-full outline-none text-sm text-slate-600">
-            </div>
-          </div>
-          <div class="flex items-center gap-3">
-            <label class="w-16 md:w-14 text-sm font-semibold text-slate-500">นามสกุล</label>
-            <div class="input-pill">
-              <i class="fa-regular fa-star text-sky-300 mr-3"></i>
-              <input type="text" id="surname" required placeholder="ระบุนามสกุล" class="bg-transparent w-full outline-none text-sm text-slate-600">
-            </div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <label class="w-16 text-sm font-semibold text-slate-500">Password</label>
-          <div class="input-pill">
-            <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
-            <input type="password" id="password" required placeholder="ตั้ง Password ของคุณ" class="bg-transparent w-full outline-none text-sm text-slate-600">
-          </div>
-        </div>
-
-        <div class="pt-6">
-          <button type="submit" class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
-            <span>ยืนยันการลงทะเบียน</span>
-            <i class="fa-solid fa-user-plus"></i>
-          </button>
-        </div>
-
-        <div class="pt-6 text-center">
-          <button type="button" onclick="showLogin()" class="text-sky-600 font-semibold text-sm hover:underline hover:text-sky-800 transition-colors">
-            มีบัญชีแล้ว หรือเปลี่ยนอุปกรณ์ใหม่? คลิกเพื่อเข้าสู่ระบบ
-          </button>
-        </div>
-      </form>
+  <div id="registerContent" class="minimal-card w-full max-w-xl p-8" style="display: none;">
+    <div class="text-center mb-8">
+      <img id="profileImage" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
+      <h2 class="text-2xl font-bold text-slate-800">ลงทะเบียนเข้าใช้งาน</h2>
+      <p id="displayName" class="text-slate-500 text-sm"></p>
     </div>
+    
+    <form onsubmit="submitForm(event)" class="space-y-4">
+      <div class="input-pill"><i class="fa-solid fa-user-tag text-blue-400 mr-3"></i><input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm"></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="input-pill"><input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm"></div>
+        <div class="input-pill"><input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="input-pill"><i class="fa-solid fa-phone text-blue-400 mr-3"></i><input type="tel" id="phone" placeholder="เบอร์โทร" maxlength="10" required class="bg-transparent w-full outline-none text-sm"></div>
+        <div class="input-pill"><i class="fa-solid fa-key text-blue-400 mr-3"></i><input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm"></div>
+      </div>
+      <button type="submit" class="btn-submit w-full py-4 mt-2">ยืนยันข้อมูล</button>
+      <div class="text-center mt-4"><button type="button" onclick="showLogin()" class="text-blue-500 text-sm font-semibold">มีบัญชีแล้ว? คลิกเข้าสู่ระบบ</button></div>
+    </form>
   </div>
 
-  <div id="loginContent" class="min-h-screen flex items-center justify-center p-4" style="display: none;">
-    <div class="minimal-card w-full max-w-md p-8 md:p-12 my-4">
-      
-      <div class="text-center mb-8 border-b border-slate-50 pb-8">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-sky-400 to-emerald-400 rounded-full shadow-md mb-6 text-white text-3xl">
-          <i class="fa-solid fa-right-to-bracket"></i>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-700">เข้าสู่ระบบ</h2>
-        <p class="text-slate-400 font-medium text-sm mt-2">ยืนยันตัวตนเพื่อเข้าใช้งาน</p>
-      </div>
-
-      <form id="loginForm" onsubmit="submitLogin(event)" class="space-y-6">
-        <div class="flex items-center gap-3">
-          <label class="w-16 text-sm font-semibold text-slate-500">Username</label>
-          <div class="input-pill">
-            <i class="fa-solid fa-user text-sky-300 mr-3"></i>
-            <input type="text" id="loginUsername" required placeholder="ระบุ Username ของคุณ" class="bg-transparent w-full outline-none text-sm text-slate-600">
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <label class="w-16 text-sm font-semibold text-slate-500">Password</label>
-          <div class="input-pill">
-            <i class="fa-solid fa-lock text-sky-300 mr-3"></i>
-            <input type="password" id="loginPassword" required placeholder="ระบุรหัสผ่านของคุณ" class="bg-transparent w-full outline-none text-sm text-slate-600">
-          </div>
-        </div>
-
-        <div class="pt-4">
-          <button type="submit" class="btn-submit w-full text-white font-bold py-4 rounded-full text-lg shadow-lg flex items-center justify-center gap-2">
-            <span>เข้าสู่ระบบ</span>
-            <i class="fa-solid fa-sign-in-alt"></i>
-          </button>
-        </div>
-
-        <div class="pt-6 text-center">
-          <button type="button" onclick="showRegister()" class="text-sky-600 font-semibold text-sm hover:underline hover:text-sky-800 transition-colors">
-            ยังไม่มีบัญชี? กลับไปหน้าลงทะเบียนใหม่
-          </button>
-        </div>
-      </form>
-    </div>
+  <div id="loginContent" class="minimal-card w-full max-w-md p-8 text-center" style="display: none;">
+    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-lock"></i></div>
+    <h2 class="text-2xl font-bold text-slate-800 mb-6">เข้าสู่ระบบ</h2>
+    <form onsubmit="submitLogin(event)" class="space-y-4 text-left">
+      <div class="input-pill"><input type="text" id="loginUsername" placeholder="Username" required class="bg-transparent w-full outline-none text-sm"></div>
+      <div class="input-pill"><input type="password" id="loginPassword" placeholder="Password" required class="bg-transparent w-full outline-none text-sm"></div>
+      <button type="submit" class="btn-submit w-full py-4 mt-2">ยืนยัน</button>
+      <button type="button" onclick="showRegister()" class="w-full text-slate-400 text-xs mt-4">กลับไปหน้าลงทะเบียน</button>
+    </form>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     let lineProfile = {};
-    
-    // 🔴 1. ตั้งค่า LIFF ID ของคุณ
     const LIFF_ID = "2009229714-1R09rohG";
-    
-    // 🔴 2. ตั้งค่า API_URL และ DASHBOARD_URL เป็นลิงก์ Web App ของคุณ
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
-    const DASHBOARD_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    // ฟังก์ชันสลับการแสดงผลหน้า UI
-    function showLogin() {
-      document.getElementById('registerContent').style.display = 'none';
-      document.getElementById('loginContent').style.display = 'flex';
-    }
+    function showLogin() { document.getElementById('registerContent').style.display='none'; document.getElementById('loginContent').style.display='flex'; }
+    function showRegister() { document.getElementById('loginContent').style.display='none'; document.getElementById('registerContent').style.display='flex'; }
 
-    function showRegister() {
-      document.getElementById('loginContent').style.display = 'none';
-      document.getElementById('registerContent').style.display = 'flex';
-    }
-
-    window.onload = async function() {
-      try {
-        await liff.init({ liffId: LIFF_ID });
-        
-        if (!liff.isLoggedIn()) { 
-          liff.login(); 
-          return;
-        } 
-        
-        // เก็บข้อมูลจาก Line ปัจจุบัน
-        const profile = await liff.getProfile();
-        lineProfile = { 
-          userId: profile.userId, 
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl
-        };
-        
-        // เช็คว่า UserID นี้เคยอยู่ในระบบหรือไม่ (จากทั้ง 2 ชีต)
-        const response = await fetch(`${API_URL}?lineId=${profile.userId}`);
-        const result = await response.json();
-        
-        if (result.isRegistered) { 
-          // ถ้าเคยมีข้อมูล ให้เด้งไป Dashboard เลย
-          window.location.replace(DASHBOARD_URL + "?uid=" + profile.userId);
-        } else {
-          // ถ้ายังไม่เคยมี ให้แสดงหน้าลงทะเบียน
-          document.getElementById('loadingScreen').style.display = 'none';
-          document.getElementById('registerContent').style.display = 'flex';
-          
-          document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
-          if(profile.pictureUrl) {
-            const imgEl = document.getElementById('profileImage');
-            imgEl.src = profile.pictureUrl;
-            imgEl.style.display = 'block';
-          }
-        }
-      } catch (err) { 
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+    window.onload = async () => {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isLoggedIn()) { liff.login(); return; }
+      const profile = await liff.getProfile();
+      lineProfile = { userId: profile.userId, displayName: profile.displayName };
+      
+      const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
+      document.getElementById('loadingScreen').style.display = 'none';
+      
+      if (res.isRegistered) {
+        window.location.replace(API_URL + "?uid=" + profile.userId);
+      } else {
+        document.getElementById('registerContent').style.display = 'block';
+        document.getElementById('profileImage').src = profile.pictureUrl;
+        document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
       }
     };
 
-    // 🌟 1. ยืนยันการลงทะเบียน
-    async function submitForm(event) {
-      event.preventDefault();
-      
-      Swal.fire({ title: 'กำลังตรวจสอบข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      
+    async function submitForm(e) {
+      e.preventDefault();
+      Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const payload = {
-        userId: lineProfile.userId,
-        displayName: lineProfile.displayName,
+        userId: lineProfile.userId, displayName: lineProfile.displayName,
         username: document.getElementById('username').value,
-        name: document.getElementById('name').value,
-        surname: document.getElementById('surname').value,
-        password: document.getElementById('password').value
+        name: document.getElementById('name').value, surname: document.getElementById('surname').value,
+        phone: document.getElementById('phone').value, password: document.getElementById('password').value
       };
-
-      try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const result = await res.json();
-        
-        if(result.success) {
-          if (result.isDuplicate) {
-            // 🎯 กรณีชื่อซ้ำ: แจ้งเตือนว่ามีชื่อแล้ว และบังคับไปหน้า Login (ไม่เพิ่มแถวใหม่)
-            Swal.fire({ 
-              icon: 'info', 
-              title: 'มีข้อมูลบัญชีอยู่แล้ว', 
-              text: result.message, 
-              timer: 3500, 
-              showConfirmButton: true,
-              confirmButtonText: 'ไปหน้าเข้าสู่ระบบ'
-            }).then(() => {
-              showLogin(); 
-            });
-          } else {
-            // 🎯 กรณีคนใหม่: บันทึกข้อมูลสำเร็จ (ลงชีต Login) และให้ไปหน้า Login
-            Swal.fire({ 
-              icon: 'success', 
-              title: 'ลงทะเบียนสำเร็จ!', 
-              text: 'กรุณาเข้าสู่ระบบด้วย Username และ Password ที่คุณเพิ่งตั้ง', 
-              timer: 2500, 
-              showConfirmButton: false 
-            }).then(() => {
-              showLogin(); 
-            });
-          }
-        } else {
-          Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); 
-        }
-      } catch (e) { 
-        Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error'); 
-      }
+      const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
+      Swal.fire({ icon: 'success', title: 'ดำเนินการเรียบร้อย', text: res.message || 'ลงทะเบียนสำเร็จ' }).then(() => showLogin());
     }
 
-    // 🌟 2. ยืนยันการเข้าสู่ระบบ
-    async function submitLogin(event) {
-      event.preventDefault();
-      
-      Swal.fire({ title: 'กำลังเข้าสู่ระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      
+    async function submitLogin(e) {
+      e.preventDefault();
+      Swal.fire({ title: 'ตรวจสอบรหัส...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const payload = {
-        action: 'login',
-        username: document.getElementById('loginUsername').value,
-        password: document.getElementById('loginPassword').value,
-        userId: lineProfile.userId,          // 🎯 ส่ง userID ปัจจุบันไปอัปเดต
-        displayName: lineProfile.displayName // 🎯 ส่ง displayName ปัจจุบันไปอัปเดต
+        action: 'login', userId: lineProfile.userId, displayName: lineProfile.displayName,
+        username: document.getElementById('loginUsername').value, password: document.getElementById('loginPassword').value
       };
-
-      try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const result = await res.json();
-        
-        if(result.success) {
-          // หากรหัสผ่านถูกต้อง (มีการบันทึกแถวใหม่ลงชีต Login ให้แล้วถ้ามีการเปลี่ยนไลน์)
-          Swal.fire({ 
-            icon: 'success', 
-            title: 'เข้าสู่ระบบสำเร็จ!', 
-            text: 'กำลังพาท่านไปหน้าแดชบอร์ด...', 
-            timer: 2000, 
-            showConfirmButton: false 
-          }).then(() => {
-            window.location.replace(DASHBOARD_URL + "?uid=" + result.uid);
-          });
-        } else {
-          Swal.fire('การเข้าสู่ระบบล้มเหลว', result.message || 'ข้อมูลไม่ถูกต้อง', 'error');
-        }
-      } catch (e) { 
-        Swal.fire('Error', 'เกิดข้อผิดพลาดในการตรวจสอบ', 'error'); 
-      }
+      const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
+      if(res.success) {
+        Swal.fire({ icon: 'success', title: 'สำเร็จ', timer: 1500, showConfirmButton: false }).then(() => {
+          window.location.replace(API_URL + "?uid=" + res.uid);
+        });
+      } else { Swal.fire('ผิดพลาด', res.message, 'error'); }
     }
   </script>
 </body>
