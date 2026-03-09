@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ระบบเจ้าหน้าที่ สอ.กวก.</title>
+  <title>ลงทะเบียนเจ้าหน้าที่ สอ.กวก.</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,7 +16,6 @@
     .btn-submit { background: linear-gradient(90deg, #3b82f6, #10b981); color: white; font-weight: bold; border-radius: 9999px; transition: 0.3s; }
     .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.3); }
     
-    /* สไตล์สำหรับเลือกฝ่าย */
     .dept-checkbox:checked + label {
       background: linear-gradient(135deg, #38bdf8, #10b981); color: white; border-color: transparent; transform: scale(1.05); box-shadow: 0 5px 12px rgba(56, 189, 248, 0.3);
     }
@@ -30,18 +29,21 @@
 
   <div id="loadingScreen" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
     <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p class="mt-4 font-medium text-slate-600">กำลังประมวลผล...</p>
+    <p class="mt-4 font-medium text-slate-600">กำลังตรวจสอบข้อมูล...</p>
   </div>
 
   <div id="registerContent" class="minimal-card w-full max-w-xl p-8" style="display: none;">
     <div class="text-center mb-6">
-      <img id="profileImage" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
+      <img id="profileImage" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg object-cover">
       <h2 class="text-2xl font-bold text-slate-800">ลงทะเบียนเข้าใช้งาน</h2>
       <p id="displayName" class="text-slate-500 text-sm"></p>
     </div>
     
     <form onsubmit="submitForm(event)" class="space-y-4">
-      <div class="input-pill"><i class="fa-solid fa-user-tag text-blue-400 mr-3"></i><input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm"></div>
+      <div class="input-pill">
+        <i class="fa-solid fa-user-tag text-blue-400 mr-3"></i>
+        <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm">
+      </div>
       
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill"><input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm"></div>
@@ -70,21 +72,7 @@
         </div>
       </div>
 
-      <button type="submit" class="btn-submit w-full py-4 mt-4">ยืนยันลงทะเบียน</button>
-      <div class="text-center mt-4">
-        <button type="button" onclick="showLogin()" class="text-blue-500 text-sm font-semibold">มีบัญชีอยู่แล้ว? คลิกเข้าสู่ระบบด้วย Username เดิม</button>
-      </div>
-    </form>
-  </div>
-
-  <div id="loginContent" class="minimal-card w-full max-w-md p-8 text-center" style="display: none;">
-    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-lock"></i></div>
-    <h2 class="text-2xl font-bold text-slate-800 mb-6">เข้าสู่ระบบ</h2>
-    <form onsubmit="submitLogin(event)" class="space-y-4 text-left">
-      <div class="input-pill"><input type="text" id="loginUsername" placeholder="Username" required class="bg-transparent w-full outline-none text-sm"></div>
-      <div class="input-pill"><input type="password" id="loginPassword" placeholder="Password" required class="bg-transparent w-full outline-none text-sm"></div>
-      <button type="submit" class="btn-submit w-full py-4 mt-2">ยืนยัน</button>
-      <button type="button" onclick="showRegister()" class="w-full text-slate-400 text-xs mt-4">กลับไปหน้าลงทะเบียน</button>
+      <button type="submit" class="btn-submit w-full py-4 mt-6">ยืนยันลงทะเบียน</button>
     </form>
   </div>
 
@@ -92,14 +80,14 @@
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
+    
+    // 🔴 แก้ลิงก์ให้ตรงกับโปรเจกต์ของคุณ
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
-    function showLogin() { document.getElementById('registerContent').style.display='none'; document.getElementById('loginContent').style.display='flex'; }
-    function showRegister() { document.getElementById('loginContent').style.display='none'; document.getElementById('registerContent').style.display='flex'; }
-
     function onlyOne(checkbox) {
-      const checkboxes = document.querySelectorAll('.dept-checkbox');
-      checkboxes.forEach((item) => { if (item !== checkbox) item.checked = false; });
+      document.querySelectorAll('.dept-checkbox').forEach((item) => {
+        if (item !== checkbox) item.checked = false;
+      });
     }
 
     function getSelectedDept() {
@@ -108,24 +96,39 @@
     }
 
     window.onload = async () => {
-      await liff.init({ liffId: LIFF_ID });
-      if (!liff.isLoggedIn()) { liff.login(); return; }
-      const profile = await liff.getProfile();
-      lineProfile = { userId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl };
-      
-      const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
-      document.getElementById('loadingScreen').style.display = 'none';
-      
-      if (res.isRegistered) {
-        window.location.replace(API_URL + "?uid=" + profile.userId);
-      } else {
-        document.getElementById('registerContent').style.display = 'block';
-        document.getElementById('profileImage').src = profile.pictureUrl;
-        document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
+        
+        const profile = await liff.getProfile();
+        lineProfile = { 
+          userId: profile.userId, 
+          displayName: profile.displayName, 
+          pictureUrl: profile.pictureUrl 
+        };
+        
+        // เช็คว่าเคยลงทะเบียนไว้หรือยัง (เช็คจากทั้ง 2 ชีตแล้ว)
+        const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
+        
+        if (res.isRegistered) {
+          // ถ้ามีข้อมูลอยู่แล้ว เด้งเข้า Dashboard ทันที ไม่ต้องโชว์หน้าลงทะเบียน
+          window.location.replace(API_URL + "?uid=" + profile.userId);
+        } else {
+          // ถ้ายังไม่มีข้อมูล ค่อยแสดงฟอร์มลงทะเบียน
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('registerContent').style.display = 'block';
+          
+          if(profile.pictureUrl) {
+            document.getElementById('profileImage').src = profile.pictureUrl;
+          }
+          document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
+        }
+      } catch (err) {
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
       }
     };
 
-    // 🌟 ยืนยันการลงทะเบียน (และเข้าแดชบอร์ดอัตโนมัติ)
+    // 🌟 ยืนยันการลงทะเบียน
     async function submitForm(e) {
       e.preventDefault();
 
@@ -135,50 +138,39 @@
       }
 
       Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      
       const payload = {
-        action: 'register',
         userId: lineProfile.userId, 
         displayName: lineProfile.displayName,
+        pictureUrl: lineProfile.pictureUrl, // 🎯 ส่งรูปลง Database ด้วย
         username: document.getElementById('username').value,
         name: document.getElementById('name').value, 
         surname: document.getElementById('surname').value,
         phone: document.getElementById('phone').value, 
         password: document.getElementById('password').value,
-        department: department // 🎯 ส่งแผนกไปด้วย
+        department: department
       };
 
-      const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
-      
-      if(res.success) {
-        // 🎯 ลงทะเบียนสำเร็จแล้ว วิ่งเข้าแดชบอร์ดให้ทันทีเลย
-        Swal.fire({ 
-          icon: 'success', 
-          title: 'สำเร็จ', 
-          text: 'ระบบกำลังพาท่านเข้าสู่หน้าหลัก', 
-          timer: 1500, 
-          showConfirmButton: false 
-        }).then(() => {
-          window.location.replace(API_URL + "?uid=" + res.uid);
-        });
-      } else {
-        Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
+        
+        if(res.success) {
+          // ทันทีที่บันทึกเสร็จ (ฐานข้อมูลอัปเดตชัวร์แล้วเพราะมีคำสั่ง flush) พาวิ่งเข้าหน้าหลักเลย
+          Swal.fire({ 
+            icon: 'success', 
+            title: 'สำเร็จ', 
+            text: 'ระบบกำลังพาท่านเข้าสู่หน้าหลัก', 
+            timer: 1500, 
+            showConfirmButton: false 
+          }).then(() => {
+            window.location.replace(API_URL + "?uid=" + res.uid);
+          });
+        } else {
+          Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+        }
+      } catch (err) {
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่', 'error');
       }
-    }
-
-    // 🌟 เข้าสู่ระบบ Manual (เผื่อมีคนอยากกรอกรหัสเก่า)
-    async function submitLogin(e) {
-      e.preventDefault();
-      Swal.fire({ title: 'ตรวจสอบรหัส...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      const payload = {
-        action: 'login', userId: lineProfile.userId, displayName: lineProfile.displayName,
-        username: document.getElementById('loginUsername').value, password: document.getElementById('loginPassword').value
-      };
-      const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
-      if(res.success) {
-        Swal.fire({ icon: 'success', title: 'สำเร็จ', timer: 1500, showConfirmButton: false }).then(() => {
-          window.location.replace(API_URL + "?uid=" + res.uid);
-        });
-      } else { Swal.fire('ผิดพลาด', res.message, 'error'); }
     }
   </script>
 </body>
