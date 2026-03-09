@@ -15,6 +15,15 @@
     .input-pill:focus-within { border-color: #3b82f6; background: white; }
     .btn-submit { background: linear-gradient(90deg, #3b82f6, #10b981); color: white; font-weight: bold; border-radius: 9999px; transition: 0.3s; }
     .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.3); }
+    
+    /* สไตล์สำหรับเลือกฝ่าย */
+    .dept-checkbox:checked + label {
+      background: linear-gradient(135deg, #38bdf8, #10b981); color: white; border-color: transparent; transform: scale(1.05); box-shadow: 0 5px 12px rgba(56, 189, 248, 0.3);
+    }
+    .dept-label {
+      cursor: pointer; border: 2px solid #f1f5f9; font-size: 0.75rem; padding: 0.6rem 0.25rem; text-align: center; border-radius: 15px; background-color: #fff; color: #64748b; font-weight: 500; transition: all 0.2s ease; display: block;
+    }
+    .dept-checkbox { display: none; }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -25,7 +34,7 @@
   </div>
 
   <div id="registerContent" class="minimal-card w-full max-w-xl p-8" style="display: none;">
-    <div class="text-center mb-8">
+    <div class="text-center mb-6">
       <img id="profileImage" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
       <h2 class="text-2xl font-bold text-slate-800">ลงทะเบียนเข้าใช้งาน</h2>
       <p id="displayName" class="text-slate-500 text-sm"></p>
@@ -33,16 +42,38 @@
     
     <form onsubmit="submitForm(event)" class="space-y-4">
       <div class="input-pill"><i class="fa-solid fa-user-tag text-blue-400 mr-3"></i><input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm"></div>
+      
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill"><input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm"></div>
         <div class="input-pill"><input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm"></div>
       </div>
+      
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill"><i class="fa-solid fa-phone text-blue-400 mr-3"></i><input type="tel" id="phone" placeholder="เบอร์โทร" maxlength="10" required class="bg-transparent w-full outline-none text-sm"></div>
         <div class="input-pill"><i class="fa-solid fa-key text-blue-400 mr-3"></i><input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm"></div>
       </div>
-      <button type="submit" class="btn-submit w-full py-4 mt-2">ยืนยันข้อมูล</button>
-      <div class="text-center mt-4"><button type="button" onclick="showLogin()" class="text-blue-500 text-sm font-semibold">มีบัญชีแล้ว? คลิกเข้าสู่ระบบ</button></div>
+
+      <div class="pt-4 border-t border-slate-100 mt-4">
+        <label class="block text-sm font-semibold text-slate-500 mb-3 text-center">เลือกฝ่ายที่สังกัด</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <script>
+            const depts = ["ฝ่ายอำนวยการ", "สินเชื่อ", "การเงิน", "บัญชี", "สมาชิกสัมพันธ์", "สารสนเทศ", "ผู้ช่วยผู้จัดการ", "ผู้จัดการ"];
+            depts.forEach((dept, index) => {
+              document.write(`
+                <div>
+                  <input type="checkbox" id="dept_${index}" value="${dept}" class="dept-checkbox" onclick="onlyOne(this)">
+                  <label for="dept_${index}" class="dept-label shadow-sm">${dept}</label>
+                </div>
+              `);
+            });
+          </script>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit w-full py-4 mt-4">ยืนยันลงทะเบียน</button>
+      <div class="text-center mt-4">
+        <button type="button" onclick="showLogin()" class="text-blue-500 text-sm font-semibold">มีบัญชีอยู่แล้ว? คลิกเข้าสู่ระบบด้วย Username เดิม</button>
+      </div>
     </form>
   </div>
 
@@ -66,11 +97,21 @@
     function showLogin() { document.getElementById('registerContent').style.display='none'; document.getElementById('loginContent').style.display='flex'; }
     function showRegister() { document.getElementById('loginContent').style.display='none'; document.getElementById('registerContent').style.display='flex'; }
 
+    function onlyOne(checkbox) {
+      const checkboxes = document.querySelectorAll('.dept-checkbox');
+      checkboxes.forEach((item) => { if (item !== checkbox) item.checked = false; });
+    }
+
+    function getSelectedDept() {
+      const checked = document.querySelector('.dept-checkbox:checked');
+      return checked ? checked.value : "";
+    }
+
     window.onload = async () => {
       await liff.init({ liffId: LIFF_ID });
       if (!liff.isLoggedIn()) { liff.login(); return; }
       const profile = await liff.getProfile();
-      lineProfile = { userId: profile.userId, displayName: profile.displayName };
+      lineProfile = { userId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl };
       
       const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
       document.getElementById('loadingScreen').style.display = 'none';
@@ -84,19 +125,47 @@
       }
     };
 
+    // 🌟 ยืนยันการลงทะเบียน (และเข้าแดชบอร์ดอัตโนมัติ)
     async function submitForm(e) {
       e.preventDefault();
-      Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const department = getSelectedDept();
+      if (!department) {
+        return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกฝ่ายที่สังกัดด้วยครับ', 'warning');
+      }
+
+      Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const payload = {
-        userId: lineProfile.userId, displayName: lineProfile.displayName,
+        action: 'register',
+        userId: lineProfile.userId, 
+        displayName: lineProfile.displayName,
         username: document.getElementById('username').value,
-        name: document.getElementById('name').value, surname: document.getElementById('surname').value,
-        phone: document.getElementById('phone').value, password: document.getElementById('password').value
+        name: document.getElementById('name').value, 
+        surname: document.getElementById('surname').value,
+        phone: document.getElementById('phone').value, 
+        password: document.getElementById('password').value,
+        department: department // 🎯 ส่งแผนกไปด้วย
       };
+
       const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
-      Swal.fire({ icon: 'success', title: 'ดำเนินการเรียบร้อย', text: res.message || 'ลงทะเบียนสำเร็จ' }).then(() => showLogin());
+      
+      if(res.success) {
+        // 🎯 ลงทะเบียนสำเร็จแล้ว วิ่งเข้าแดชบอร์ดให้ทันทีเลย
+        Swal.fire({ 
+          icon: 'success', 
+          title: 'สำเร็จ', 
+          text: 'ระบบกำลังพาท่านเข้าสู่หน้าหลัก', 
+          timer: 1500, 
+          showConfirmButton: false 
+        }).then(() => {
+          window.location.replace(API_URL + "?uid=" + res.uid);
+        });
+      } else {
+        Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+      }
     }
 
+    // 🌟 เข้าสู่ระบบ Manual (เผื่อมีคนอยากกรอกรหัสเก่า)
     async function submitLogin(e) {
       e.preventDefault();
       Swal.fire({ title: 'ตรวจสอบรหัส...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
