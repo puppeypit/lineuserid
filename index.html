@@ -103,24 +103,8 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🔴 URL ระบบหลัก
+    // 🔴 แก้ลิงก์ให้ตรงกับโปรเจกต์ของคุณ
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
-    
-    // ✨ 1. นำ URL ของระบบปฏิทินมาใส่ตรงนี้ (ต้องลงท้ายด้วย /exec)
-    const CALENDAR_APP_URL = "https://script.google.com/macros/s/AKfycbz_uIfwhwqGFJL9of6GGAWEgt326i_r-xAD8BCE4kJRQkyO3OtRTKNEV7A9wNTnojp5Hw/exec"; 
-
-    // ✨ 2. อ่านค่าพารามิเตอร์ target จาก URL ว่ามาจากระบบไหน
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetApp = urlParams.get('target');
-
-    // ✨ 3. ฟังก์ชันสำหรับเด้งหน้าเว็บไปยังปลายทางที่ถูกต้อง
-    function redirectUser(uid) {
-      if (targetApp === 'calendar') {
-        window.location.replace(CALENDAR_APP_URL + "?uid=" + uid);
-      } else {
-        window.location.replace(API_URL + "?uid=" + uid); // กลับระบบหลักถ้าไม่มี target
-      }
-    }
 
     function onlyOne(checkbox) {
       document.querySelectorAll('.dept-checkbox').forEach((item) => {
@@ -148,8 +132,7 @@
         const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
         
         if (res.isRegistered) {
-          // ✨ แทนที่จะไป API_URL เสมอ ให้เรียกใช้ฟังก์ชัน redirectUser แทน
-          redirectUser(profile.userId);
+          window.location.replace(API_URL + "?uid=" + profile.userId);
         } else {
           document.getElementById('loadingScreen').style.display = 'none';
           document.getElementById('registerContent').style.display = 'block';
@@ -197,8 +180,7 @@
             timer: 1500, 
             showConfirmButton: false 
           }).then(() => {
-            // ✨ แทนที่จะไป API_URL เสมอ ให้เรียกใช้ฟังก์ชัน redirectUser แทน
-            redirectUser(res.uid);
+            window.location.replace(API_URL + "?uid=" + res.uid);
           });
         } else {
           Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
