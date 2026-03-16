@@ -170,7 +170,14 @@
       };
 
       try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
+        // 🎯 🎯 แทรก headers: 'text/plain' เพื่อแก้ปัญหาบันทึกไม่ได้ / CORS
+        const res = await fetch(API_URL, { 
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify(payload) 
+        }).then(r => r.json());
         
         if(res.success) {
           Swal.fire({ 
@@ -183,7 +190,8 @@
             window.location.replace(API_URL + "?uid=" + res.uid);
           });
         } else {
-          Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+          // 🎯 ถ้าระบบหลังบ้านพัง มันจะแสดงข้อความตรงนี้ ให้คุณเห็นทันที
+          Swal.fire('ข้อผิดพลาดจากฐานข้อมูล', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
         }
       } catch (err) {
         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่', 'error');
