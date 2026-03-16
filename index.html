@@ -44,28 +44,30 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-regular fa-user text-blue-400 mr-3"></i>
-          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm">
+          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/\s/g, '')">
         </div>
         <div class="input-pill">
           <i class="fa-regular fa-address-card text-blue-400 mr-3"></i>
-          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm">
+          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/\s/g, '')">
         </div>
       </div>
       
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-solid fa-user-tag text-blue-400 mr-3"></i>
-          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm">
+          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^A-Za-zก-๛]/g, '')">
         </div>
-        <div class="input-pill">
+        
+        <div class="input-pill relative">
           <i class="fa-solid fa-key text-blue-400 mr-3"></i>
-          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm">
+          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm pr-6">
+          <i class="fa-solid fa-eye text-slate-400 absolute right-4 cursor-pointer hover:text-blue-500 transition-colors" id="togglePasswordBtn" onclick="togglePassword()"></i>
         </div>
       </div>
 
       <div class="input-pill">
         <i class="fa-solid fa-phone text-blue-400 mr-3"></i>
-        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ (08XXXXXXXX)" maxlength="10" required class="bg-transparent w-full outline-none text-sm">
+        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ (08XXXXXXXX)" maxlength="10" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
       </div>
 
       <div class="pt-4 border-t border-slate-100 mt-4">
@@ -103,7 +105,7 @@
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     
-    // 🔴 แก้ลิงก์ให้ตรงกับโปรเจกต์ของคุณ
+    // 🔴 แก้ลิงก์ให้ตรงกับโปรเจกต์ของคุณ (อัปเดตหลังจาก Deploy ใหม่)
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
     function onlyOne(checkbox) {
@@ -115,6 +117,21 @@
     function getSelectedDept() {
       const checked = document.querySelector('.dept-checkbox:checked');
       return checked ? checked.value : "";
+    }
+
+    // 🎯 ฟังก์ชันสำหรับสลับการมองเห็นรหัสผ่าน (Toggle Password)
+    function togglePassword() {
+      const pwdInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePasswordBtn');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        toggleBtn.classList.remove('fa-eye');
+        toggleBtn.classList.add('fa-eye-slash');
+      } else {
+        pwdInput.type = 'password';
+        toggleBtn.classList.remove('fa-eye-slash');
+        toggleBtn.classList.add('fa-eye');
+      }
     }
 
     window.onload = async () => {
@@ -170,12 +187,9 @@
       };
 
       try {
-        // 🎯 🎯 แทรก headers: 'text/plain' เพื่อแก้ปัญหาบันทึกไม่ได้ / CORS
         const res = await fetch(API_URL, { 
             method: 'POST', 
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload) 
         }).then(r => r.json());
         
@@ -190,8 +204,8 @@
             window.location.replace(API_URL + "?uid=" + res.uid);
           });
         } else {
-          // 🎯 ถ้าระบบหลังบ้านพัง มันจะแสดงข้อความตรงนี้ ให้คุณเห็นทันที
-          Swal.fire('ข้อผิดพลาดจากฐานข้อมูล', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+          // 🎯 ถ้ามีแจ้งเตือนแปลกๆ (เช่น ชื่อซ้ำ เบอร์ซ้ำ) มันจะแสดงข้อความตรงๆ ออกมาเลย
+          Swal.fire('แจ้งเตือน', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'warning');
         }
       } catch (err) {
         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่', 'error');
