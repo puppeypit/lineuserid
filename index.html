@@ -1,229 +1,196 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ลงทะเบียนเจ้าหน้าที่ สอ.กวก.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
-    .minimal-card { background: white; border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-    .input-pill { display: flex; align-items: center; padding: 0.75rem 1.25rem; background: #f1f5f9; border-radius: 9999px; border: 2px solid transparent; transition: 0.3s; }
-    .input-pill:focus-within { border-color: #3b82f6; background: white; }
-    .btn-submit { background: linear-gradient(90deg, #3b82f6, #10b981); color: white; font-weight: bold; border-radius: 9999px; transition: 0.3s; }
-    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.3); }
-    
-    .dept-checkbox:checked + label {
-      background: linear-gradient(135deg, #38bdf8, #10b981); color: white; border-color: transparent; transform: scale(1.05); box-shadow: 0 5px 12px rgba(56, 189, 248, 0.3);
-    }
-    .dept-label {
-      cursor: pointer; border: 2px solid #f1f5f9; font-size: 0.75rem; padding: 0.6rem 0.25rem; text-align: center; border-radius: 15px; background-color: #fff; color: #64748b; font-weight: 500; transition: all 0.2s ease; display: block;
-    }
-    .dept-checkbox { display: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนเข้าใช้งาน สอ.กวก.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            min-height: 100vh;
+        }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(12px); 
+            box-shadow: 0 20px 40px -10px rgba(71, 85, 105, 0.15); 
+            border: 1px solid rgba(255, 255, 255, 1); 
+        }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="flex items-center justify-center p-4">
 
-  <div id="loadingScreen" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p class="mt-4 font-medium text-slate-600">กำลังตรวจสอบข้อมูล...</p>
-  </div>
+    <div class="w-full max-w-md glass-card rounded-[2.5rem] p-8 relative z-10 text-center">
+        <div class="relative w-24 h-24 mx-auto mb-4">
+            <img id="profileImage" src="https://via.placeholder.com/150" class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover bg-slate-100">
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800 mb-1">ลงทะเบียนเข้าใช้งาน</h2>
+        <p class="text-slate-500 text-sm mb-6" id="profileName">กำลังโหลดข้อมูล LINE...</p>
 
-  <div id="registerContent" class="minimal-card w-full max-w-xl p-8" style="display: none;">
-    <div class="text-center mb-6">
-      <img id="profileImage" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg object-cover">
-      <h2 class="text-2xl font-bold text-slate-800">ลงทะเบียนเข้าใช้งาน</h2>
-      <p id="displayName" class="text-slate-500 text-sm"></p>
-    </div>
-    
-    <form onsubmit="submitForm(event)" class="space-y-4">
-      
-      <div class="grid grid-cols-2 gap-4">
-        <div class="input-pill">
-          <i class="fa-regular fa-user text-blue-400 mr-3"></i>
-          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm">
-        </div>
-        <div class="input-pill">
-          <i class="fa-regular fa-address-card text-blue-400 mr-3"></i>
-          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm">
-        </div>
-      </div>
-      
-      <div class="grid grid-cols-2 gap-4">
-        <div class="input-pill">
-          <i class="fa-solid fa-user-tag text-blue-400 mr-3"></i>
-          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm">
-        </div>
-        <div class="input-pill">
-          <i class="fa-solid fa-key text-blue-400 mr-3"></i>
-          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm">
-        </div>
-      </div>
-
-      <div class="input-pill">
-        <i class="fa-solid fa-phone text-blue-400 mr-3"></i>
-        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ (08XXXXXXXX)" maxlength="10" required class="bg-transparent w-full outline-none text-sm">
-      </div>
-
-      <div class="pt-4 border-t border-slate-100 mt-4">
-        <label class="block text-sm font-semibold text-slate-500 mb-3 text-center">เลือกฝ่ายที่สังกัด</label>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <script>
-            const depts = [
-              "ฝ่ายอำนวยการ", 
-              "ฝ่ายสินเชื่อ", 
-              "ฝ่ายการเงิน", 
-              "ฝ่ายบัญชี", 
-              "ฝ่ายสมาชิกสัมพันธ์", 
-              "ฝ่ายสารสนเทศ", 
-              "ผู้ช่วยผู้จัดการ", 
-              "ผู้จัดการ"
-            ];
-            depts.forEach((dept, index) => {
-              document.write(`
+        <form id="registerForm" class="space-y-4 text-left">
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <input type="checkbox" id="dept_${index}" value="${dept}" class="dept-checkbox" onclick="onlyOne(this)">
-                  <label for="dept_${index}" class="dept-label shadow-sm">${dept}</label>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">ชื่อจริง</label>
+                    <input type="text" id="name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50 focus:bg-white transition-colors">
                 </div>
-              `);
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">นามสกุล</label>
+                    <input type="text" id="surname" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50 focus:bg-white transition-colors">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">เบอร์โทรศัพท์ (10 หลัก)</label>
+                <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50 focus:bg-white transition-colors">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-2">สังกัด / ฝ่าย</label>
+                <div class="grid grid-cols-2 gap-2 text-center">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="department" value="ฝ่ายสารสนเทศ" class="peer sr-only" required>
+                        <div class="rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-500 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-slate-50">ฝ่ายสารสนเทศ</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="department" value="ฝ่ายสมาชิกสัมพันธ์" class="peer sr-only">
+                        <div class="rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-500 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-slate-50">ฝ่ายสมาชิกสัมพันธ์</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="department" value="ฝ่ายสินเชื่อ" class="peer sr-only">
+                        <div class="rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-500 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-slate-50">ฝ่ายสินเชื่อ</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="department" value="ผู้ช่วยผู้จัดการ" class="peer sr-only">
+                        <div class="rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-500 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-slate-50">ผู้ช่วยผู้จัดการ</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="department" value="ผู้จัดการ" class="peer sr-only">
+                        <div class="rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-500 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-slate-50">ผู้จัดการ</div>
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1 mt-2">กำหนดรหัสผ่าน (PIN 6 หลัก)</label>
+                <input type="password" id="password" required pattern="[0-9]{6}" placeholder="******" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-center tracking-[0.5em] bg-slate-50 focus:bg-white transition-colors">
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transform transition hover:-translate-y-1">
+                ยืนยันลงทะเบียน
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // 🎯 ใส่ URL ของ Google Apps Script ที่คุณ Deploy ไว้ล่าสุด
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
+        const LIFF_ID = "2009229714-1R09rohG";
+        let userProfile = {};
+
+        // 1. เริ่มทำงาน ดึงข้อมูล LINE
+        document.addEventListener("DOMContentLoaded", async function() {
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                if (liff.isLoggedIn()) {
+                    userProfile = await liff.getProfile();
+                    document.getElementById('profileImage').src = userProfile.pictureUrl || "https://via.placeholder.com/150";
+                    document.getElementById('profileName').innerText = userProfile.displayName;
+                    
+                    // เช็คว่าผู้ใช้นี้เคยลงทะเบียนหรือยัง?
+                    checkRegistration(userProfile.userId);
+                } else {
+                    liff.login();
+                }
+            } catch (err) {
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อ LINE ได้ กรุณาเข้าผ่านแอปพลิเคชัน', 'error');
+            }
+        });
+
+        // 2. ฟังก์ชันตรวจสอบการลงทะเบียน
+        function checkRegistration(userId) {
+            Swal.fire({ title: 'กำลังตรวจสอบข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+            
+            fetch(SCRIPT_URL + "?lineId=" + userId)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.isRegistered) {
+                        // ถ้าเคยลงทะเบียนแล้ว ให้โยนไปหน้า Dashboard ทันทีเลย
+                        window.location.href = SCRIPT_URL + "?uid=" + userId;
+                    } else {
+                        // ถ้ายังไม่เคย ให้ปิด Loading แล้วรอให้กรอกฟอร์ม
+                        Swal.close();
+                    }
+                })
+                .catch(err => {
+                    Swal.close();
+                });
+        }
+
+        // 3. ฟังก์ชันตอนกดปุ่มยืนยันการลงทะเบียน
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!userProfile.userId) {
+                Swal.fire('ข้อผิดพลาด', 'ไม่พบข้อมูล LINE ID กรุณาเข้าสู่ระบบใหม่', 'error');
+                return;
+            }
+
+            // รวบรวมข้อมูลที่กรอก
+            const selectedDept = document.querySelector('input[name="department"]:checked').value;
+            const payload = {
+                userId: userProfile.userId,
+                displayName: userProfile.displayName,
+                username: userProfile.displayName,
+                pictureUrl: userProfile.pictureUrl || "https://via.placeholder.com/150",
+                name: document.getElementById('name').value,
+                surname: document.getElementById('surname').value,
+                phone: document.getElementById('phone').value,
+                department: selectedDept,
+                password: document.getElementById('password').value
+            };
+
+            Swal.fire({
+                title: 'กำลังบันทึกข้อมูล...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
             });
-          </script>
-        </div>
-      </div>
 
-      <button type="submit" class="btn-submit w-full py-4 mt-6">ยืนยันลงทะเบียน</button>
-    </form>
-  </div>
-
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script>
-    let lineProfile = {};
-    const LIFF_ID = "2009229714-1R09rohG";
-    
-    // 🔴 ลิงก์ API ของระบบ (Google Apps Script)
-    const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
-
-    function onlyOne(checkbox) {
-      document.querySelectorAll('.dept-checkbox').forEach((item) => {
-        if (item !== checkbox) item.checked = false;
-      });
-    }
-
-    function getSelectedDept() {
-      const checked = document.querySelector('.dept-checkbox:checked');
-      return checked ? checked.value : "";
-    }
-
-    window.onload = async () => {
-      try {
-        await liff.init({ liffId: LIFF_ID });
-
-        // 🎯 1. ดักจับ Parameter จาก URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const isLogout = urlParams.get('logout') === 'true';
-        const isNotFound = urlParams.get('status') === 'not_found';
-
-        // 🎯 2. จัดการเมื่อผู้ใช้กด "ออกจากระบบ" มาจากหน้า Dashboard
-        if (isLogout) {
-          if (liff.isLoggedIn()) {
-            liff.logout(); // สั่งล้าง Session ของ LINE LIFF
-          }
-          // เคลียร์ URL ให้สะอาด ป้องกันการ Refresh แล้วล็อกเอาท์ซ้ำ
-          window.history.replaceState(null, null, window.location.pathname);
-          Swal.fire({
-            icon: 'success',
-            title: 'ออกจากระบบสำเร็จ',
-            text: 'คุณได้ออกจากระบบเรียบร้อยแล้ว',
-            timer: 2000,
-            showConfirmButton: false
-          });
-        }
-
-        // ถ้ายังไม่ได้ล็อกอิน ให้เรียกหน้าล็อกอินของ LINE
-        if (!liff.isLoggedIn()) { 
-            liff.login(); 
-            return; 
-        }
-        
-        const profile = await liff.getProfile();
-        lineProfile = { 
-          userId: profile.userId, 
-          displayName: profile.displayName, 
-          pictureUrl: profile.pictureUrl 
-        };
-        
-        // ตรวจสอบข้อมูลในฐานข้อมูล
-        const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
-        
-        // 🎯 3. เงื่อนไขการ Redirect: ต้องมีข้อมูลในระบบ และต้องไม่ได้ติดสถานะ not_found จาก Dashboard
-        if (res.isRegistered && !isNotFound) {
-          window.location.href = API_URL + "?uid=" + profile.userId;
-        } else {
-          // เคลียร์สถานะ not_found ออกจาก URL
-          if (isNotFound) window.history.replaceState(null, null, window.location.pathname);
-
-          // แสดงฟอร์มลงทะเบียน
-          document.getElementById('loadingScreen').style.display = 'none';
-          document.getElementById('registerContent').style.display = 'block';
-          
-          if(profile.pictureUrl) {
-            document.getElementById('profileImage').src = profile.pictureUrl;
-          }
-          document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
-        }
-      } catch (err) {
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
-      }
-    };
-
-    async function submitForm(e) {
-      e.preventDefault();
-
-      const department = getSelectedDept();
-      if (!department) {
-        return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกฝ่ายที่สังกัดด้วยครับ', 'warning');
-      }
-
-      Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      
-      const payload = {
-        userId: lineProfile.userId, 
-        displayName: lineProfile.displayName,
-        pictureUrl: lineProfile.pictureUrl,
-        username: document.getElementById('username').value,
-        name: document.getElementById('name').value, 
-        surname: document.getElementById('surname').value,
-        phone: document.getElementById('phone').value, 
-        password: document.getElementById('password').value,
-        department: department
-      };
-
-      try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
-        
-        if(res.success) {
-          Swal.fire({ 
-            icon: 'success', 
-            title: 'สำเร็จ', 
-            text: 'ระบบกำลังพาท่านเข้าสู่หน้าหลัก', 
-            timer: 1500, 
-            showConfirmButton: false 
-          }).then(() => {
-            // 🎯 ใช้ window.location.href เพื่อความเสถียรในการเปลี่ยนหน้า
-            window.location.href = API_URL + "?uid=" + res.uid;
-          });
-        } else {
-          Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
-        }
-      } catch (err) {
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่', 'error');
-      }
-    }
-  </script>
+            // 🎯 กุญแจสำคัญ: ส่งแบบ text/plain เพื่อหลบระบบป้องกัน CORS ของเบราว์เซอร์
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8' 
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ลงทะเบียนสำเร็จ!',
+                        text: 'ระบบกำลังพาท่านเข้าสู่หน้าหลัก',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // พาผู้ใช้เด้งเข้าสู่หน้า Dashboard ที่เราทำแยกฝ่ายไว้เมื่อสักครู่
+                        window.location.href = SCRIPT_URL + "?uid=" + data.uid;
+                    });
+                } else {
+                    Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้: ' + (data.error || 'ข้อผิดพลาดระบบ'), 'error');
+                }
+            })
+            .catch(error => {
+                Swal.fire('ข้อผิดพลาด', 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่อีกครั้ง', 'error');
+                console.error("Fetch Error:", error);
+            });
+        });
+    </script>
 </body>
 </html>
-
-
