@@ -9,59 +9,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    /* 🎯 ปรับแต่งพื้นหลังเป็นโทนสีพาสเทล Lavender/Periwinkle */
-    body { 
-        font-family: 'Kanit', sans-serif; 
-        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-        min-height: 100vh;
-    }
+    body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
+    .minimal-card { background: white; border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    .input-pill { display: flex; align-items: center; padding: 0.75rem 1.25rem; background: #f1f5f9; border-radius: 9999px; border: 2px solid transparent; transition: 0.3s; }
+    .input-pill:focus-within { border-color: #3b82f6; background: white; }
+    .btn-submit { background: linear-gradient(90deg, #3b82f6, #10b981); color: white; font-weight: bold; border-radius: 9999px; transition: 0.3s; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.3); }
     
-    /* 🎯 เปลี่ยนการ์ดเป็นแบบกระจกใส (Glassmorphism) */
-    .minimal-card { 
-        background: rgba(255, 255, 255, 0.95); 
-        backdrop-filter: blur(12px); 
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 1); 
-        border-radius: 2.5rem; 
-        box-shadow: 0 20px 40px -10px rgba(71, 85, 105, 0.15); 
-    }
-    
-    /* 🎯 ปรับแต่งช่องกรอกข้อมูลให้ดูโค้งมนและสะอาดตาขึ้น */
-    .input-pill { 
-        display: flex; align-items: center; padding: 0.85rem 1.25rem; 
-        background: rgba(248, 250, 252, 0.8); border-radius: 1rem; 
-        border: 1px solid #e2e8f0; transition: 0.3s; 
-    }
-    .input-pill:focus-within { 
-        border-color: #3b82f6; background: white; 
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
-    }
-    
-    /* 🎯 ปุ่มยืนยันแบบมีมิติ */
-    .btn-submit { 
-        background: linear-gradient(to right, #2563eb, #4f46e5); 
-        color: white; font-weight: bold; border-radius: 1rem; transition: all 0.3s; 
-    }
-    .btn-submit:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); 
-    }
-    
-    /* 🎯 ปุ่มเลือกฝ่าย */
     .dept-checkbox:checked + label {
-      background: #2563eb; color: white; border-color: #2563eb; 
-      transform: scale(1.02); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+      background: linear-gradient(135deg, #38bdf8, #10b981); color: white; border-color: transparent; transform: scale(1.05); box-shadow: 0 5px 12px rgba(56, 189, 248, 0.3);
     }
     .dept-label {
-      cursor: pointer; border: 1px solid #cbd5e1; font-size: 0.75rem; 
-      padding: 0.6rem 0.25rem; text-align: center; border-radius: 0.75rem; 
-      background-color: rgba(255,255,255,0.8); color: #64748b; font-weight: 500; 
-      transition: all 0.2s ease; display: block;
+      cursor: pointer; border: 2px solid #f1f5f9; font-size: 0.75rem; padding: 0.6rem 0.25rem; text-align: center; border-radius: 15px; background-color: #fff; color: #64748b; font-weight: 500; transition: all 0.2s ease; display: block;
     }
     .dept-checkbox { display: none; }
   </style>
 </head>
-<body class="flex items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4">
 
   <div id="loadingScreen" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
     <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -70,11 +34,9 @@
 
   <div id="registerContent" class="minimal-card w-full max-w-xl p-8" style="display: none;">
     <div class="text-center mb-6">
-      <div class="relative w-24 h-24 mx-auto mb-4">
-          <img id="profileImage" class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover bg-slate-100 mx-auto">
-      </div>
+      <img id="profileImage" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg object-cover">
       <h2 class="text-2xl font-bold text-slate-800">ลงทะเบียนเข้าใช้งาน</h2>
-      <p id="displayName" class="text-slate-500 text-sm mt-1"></p>
+      <p id="displayName" class="text-slate-500 text-sm"></p>
     </div>
     
     <form onsubmit="submitForm(event)" class="space-y-4">
@@ -82,32 +44,32 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-regular fa-user text-blue-400 mr-3"></i>
-          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm text-slate-700">
+          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm">
         </div>
         <div class="input-pill">
           <i class="fa-regular fa-address-card text-blue-400 mr-3"></i>
-          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm text-slate-700">
+          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm">
         </div>
       </div>
       
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-solid fa-user-tag text-blue-400 mr-3"></i>
-          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm text-slate-700">
+          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm">
         </div>
         <div class="input-pill">
           <i class="fa-solid fa-key text-blue-400 mr-3"></i>
-          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm text-slate-700">
+          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm">
         </div>
       </div>
 
       <div class="input-pill">
         <i class="fa-solid fa-phone text-blue-400 mr-3"></i>
-        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ (08XXXXXXXX)" maxlength="10" required class="bg-transparent w-full outline-none text-sm text-slate-700">
+        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ (08XXXXXXXX)" maxlength="10" required class="bg-transparent w-full outline-none text-sm">
       </div>
 
-      <div class="pt-4 border-t border-slate-200 mt-5">
-        <label class="block text-sm font-bold text-slate-500 mb-3 text-center uppercase tracking-wide">เลือกฝ่ายที่สังกัด</label>
+      <div class="pt-4 border-t border-slate-100 mt-4">
+        <label class="block text-sm font-semibold text-slate-500 mb-3 text-center">เลือกฝ่ายที่สังกัด</label>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <script>
             const depts = [
@@ -132,16 +94,16 @@
         </div>
       </div>
 
-      <button type="submit" class="btn-submit w-full py-3.5 mt-6 shadow-lg">ยืนยันลงทะเบียน</button>
+      <button type="submit" class="btn-submit w-full py-4 mt-6">ยืนยันลงทะเบียน</button>
     </form>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // 🎯 โค้ดส่วนลอจิกของคุณทั้งหมด อยู่ครบ 100%
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
     
+    // 🔴 แก้ลิงก์ให้ตรงกับโปรเจกต์ของคุณ
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
     function onlyOne(checkbox) {
@@ -208,14 +170,7 @@
       };
 
       try {
-        // 🎯 เติม Headers: text/plain ให้เพื่อหลบปัญหา CORS Error ที่คุณเพิ่งเจอครับ
-        const res = await fetch(API_URL, { 
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(payload) 
-        }).then(r => r.json());
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
         
         if(res.success) {
           Swal.fire({ 
