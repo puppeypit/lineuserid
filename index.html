@@ -55,9 +55,8 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-solid fa-user-tag text-blue-400 mr-3"></i>
-          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^A-Za-zก-๛]/g, '')">
+          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^A-Za-z0-9ก-๛]/g, '')">
         </div>
-        
         <div class="input-pill relative">
           <i class="fa-solid fa-key text-blue-400 mr-3"></i>
           <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm pr-6">
@@ -75,14 +74,8 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <script>
             const depts = [
-              "ฝ่ายอำนวยการ", 
-              "ฝ่ายสินเชื่อ", 
-              "ฝ่ายการเงิน", 
-              "ฝ่ายบัญชี", 
-              "ฝ่ายสมาชิกสัมพันธ์", 
-              "ฝ่ายสารสนเทศ", 
-              "ผู้ช่วยผู้จัดการ", 
-              "ผู้จัดการ"
+              "ฝ่ายอำนวยการ", "ฝ่ายสินเชื่อ", "ฝ่ายการเงิน", "ฝ่ายบัญชี", 
+              "ฝ่ายสมาชิกสัมพันธ์", "ฝ่ายสารสนเทศ", "ผู้ช่วยผู้จัดการ", "ผู้จัดการ"
             ];
             depts.forEach((dept, index) => {
               document.write(`
@@ -104,8 +97,6 @@
   <script>
     let lineProfile = {};
     const LIFF_ID = "2009229714-1R09rohG";
-    
-    // 🔴 แก้ลิงก์ให้ตรงกับโปรเจกต์ของคุณ (อัปเดตหลังจาก Deploy ใหม่)
     const API_URL = "https://script.google.com/macros/s/AKfycbz_famQR3HTZkR8TKAKjZNYfvZ3PpVsJamulajhGmcWg_lJGeyzODMlfl1lITTXJTXB/exec";
 
     function onlyOne(checkbox) {
@@ -119,7 +110,6 @@
       return checked ? checked.value : "";
     }
 
-    // 🎯 ฟังก์ชันสำหรับสลับการมองเห็นรหัสผ่าน (Toggle Password)
     function togglePassword() {
       const pwdInput = document.getElementById('password');
       const toggleBtn = document.getElementById('togglePasswordBtn');
@@ -137,7 +127,20 @@
     window.onload = async () => {
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) { liff.login(); return; }
+        
+        // 🎯 1. ดักจับค่าเป้าหมายแบบครอบจักรวาล (ดูจาก URL ทั้งก้อนเลยว่ามีคำว่า calendar ไหม)
+        const currentUrl = window.location.href;
+        const isTargetCalendar = currentUrl.includes('target=calendar');
+
+        if (!liff.isLoggedIn()) { 
+            // 🎯 ถ้ายังไม่ล็อกอิน ให้พาไปล็อกอิน พร้อมกับแนบลิงก์เดิมที่มี target ไปด้วย
+            let redirectUrl = "https://puppeypit.github.io/lineuserid/";
+            if (isTargetCalendar) {
+                redirectUrl += "?target=calendar";
+            }
+            liff.login({ redirectUri: redirectUrl }); 
+            return; 
+        }
         
         const profile = await liff.getProfile();
         lineProfile = { 
@@ -149,8 +152,16 @@
         const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
         
         if (res.isRegistered) {
-          window.location.replace(API_URL + "?uid=" + profile.userId);
+          // 🎯 2. มีข้อมูลแล้ว! แยกทางเดินตามเป้าหมาย
+          if (isTargetCalendar) {
+              // 🚀 ไปที่ระบบปฏิทิน พร้อม Auto Login
+              window.location.replace("https://doacoop-it.github.io/meeting_calendar?uid=" + profile.userId);
+          } else {
+              // 🏠 เข้าผ่านลิงก์ LIFF ปกติ ไปหน้า Dashboard
+              window.location.replace(API_URL + "?uid=" + profile.userId); 
+          }
         } else {
+          // 🎯 3. ไม่มีข้อมูล เปิดฟอร์มลงทะเบียน
           document.getElementById('loadingScreen').style.display = 'none';
           document.getElementById('registerContent').style.display = 'block';
           
@@ -197,14 +208,22 @@
           Swal.fire({ 
             icon: 'success', 
             title: 'สำเร็จ', 
-            text: 'ระบบกำลังพาท่านเข้าสู่หน้าหลัก', 
+            text: 'ระบบกำลังพาท่านเข้าสู่แอปพลิเคชัน', 
             timer: 1500, 
             showConfirmButton: false 
           }).then(() => {
-            window.location.replace(API_URL + "?uid=" + res.uid);
+            // 🎯 4. ลงทะเบียนเสร็จ เช็คเส้นทางเป้าหมายอีกครั้ง
+            const isTargetCalendar = window.location.href.includes('target=calendar');
+            
+            if (isTargetCalendar) {
+                // 🚀 ลงทะเบียนเสร็จ ไปปฏิทิน
+                window.location.replace("https://doacoop-it.github.io/meeting_calendar?uid=" + res.uid);
+            } else {
+                // 🏠 ลงทะเบียนเสร็จ ไป Dashboard
+                window.location.replace(API_URL + "?uid=" + res.uid);
+            }
           });
         } else {
-          // 🎯 ถ้ามีแจ้งเตือนแปลกๆ (เช่น ชื่อซ้ำ เบอร์ซ้ำ) มันจะแสดงข้อความตรงๆ ออกมาเลย
           Swal.fire('แจ้งเตือน', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'warning');
         }
       } catch (err) {
