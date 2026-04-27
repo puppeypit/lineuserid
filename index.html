@@ -171,7 +171,8 @@
           document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
         }
       } catch (err) {
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+        console.error(err); // พิมพ์ Error ลง Console (กด F12 ดูได้)
+        Swal.fire('ข้อผิดพลาดของระบบ', err.message, 'error'); // แสดงข้อความ Error ที่แท้จริงออกมาบนหน้าจอ
       }
     };
 
