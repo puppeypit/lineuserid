@@ -128,12 +128,10 @@
       try {
         await liff.init({ liffId: LIFF_ID });
         
-        // 🎯 1. ดักจับค่าเป้าหมายแบบครอบจักรวาล (ดูจาก URL ทั้งก้อนเลยว่ามีคำว่า calendar ไหม)
         const currentUrl = window.location.href;
         const isTargetCalendar = currentUrl.includes('target=calendar');
 
         if (!liff.isLoggedIn()) { 
-            // 🎯 ถ้ายังไม่ล็อกอิน ให้พาไปล็อกอิน พร้อมกับแนบลิงก์เดิมที่มี target ไปด้วย
             let redirectUrl = "https://puppeypit.github.io/lineuserid/";
             if (isTargetCalendar) {
                 redirectUrl += "?target=calendar";
@@ -152,16 +150,13 @@
         const res = await fetch(`${API_URL}?lineId=${profile.userId}`).then(r => r.json());
         
         if (res.isRegistered) {
-          // 🎯 2. มีข้อมูลแล้ว! แยกทางเดินตามเป้าหมาย
           if (isTargetCalendar) {
-              // 🚀 ไปที่ระบบปฏิทิน พร้อม Auto Login
               window.location.replace("https://doacoop-it.github.io/meeting_calendar?uid=" + profile.userId);
           } else {
-              // 🏠 เข้าผ่านลิงก์ LIFF ปกติ ไปหน้า Dashboard
-              window.location.replace(API_URL + "?uid=" + profile.userId); 
+              // 🔴 แก้ไขลิงก์: ชี้ไปที่เว็บ GitHub หน้า Dashboard หลัก
+              window.location.replace("https://doacoop-it.github.io/app-website/?uid=" + profile.userId); 
           }
         } else {
-          // 🎯 3. ไม่มีข้อมูล เปิดฟอร์มลงทะเบียน
           document.getElementById('loadingScreen').style.display = 'none';
           document.getElementById('registerContent').style.display = 'block';
           
@@ -171,8 +166,8 @@
           document.getElementById('displayName').innerText = "สวัสดีคุณ " + profile.displayName;
         }
       } catch (err) {
-        console.error(err); // พิมพ์ Error ลง Console (กด F12 ดูได้)
-        Swal.fire('ข้อผิดพลาดของระบบ', err.message, 'error'); // แสดงข้อความ Error ที่แท้จริงออกมาบนหน้าจอ
+        console.error(err); 
+        Swal.fire('ข้อผิดพลาดของระบบ', err.message, 'error'); 
       }
     };
 
@@ -213,21 +208,20 @@
             timer: 1500, 
             showConfirmButton: false 
           }).then(() => {
-            // 🎯 4. ลงทะเบียนเสร็จ เช็คเส้นทางเป้าหมายอีกครั้ง
             const isTargetCalendar = window.location.href.includes('target=calendar');
             
             if (isTargetCalendar) {
-                // 🚀 ลงทะเบียนเสร็จ ไปปฏิทิน
                 window.location.replace("https://doacoop-it.github.io/meeting_calendar?uid=" + res.uid);
             } else {
-                // 🏠 ลงทะเบียนเสร็จ ไป Dashboard
-                window.location.replace(API_URL + "?uid=" + res.uid);
+                // 🔴 แก้ไขลิงก์: ชี้ไปที่เว็บ GitHub หน้า Dashboard หลัก
+                window.location.replace("https://doacoop-it.github.io/app-website/?uid=" + res.uid);
             }
           });
         } else {
           Swal.fire('แจ้งเตือน', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'warning');
         }
       } catch (err) {
+        console.error(err);
         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่', 'error');
       }
     }
