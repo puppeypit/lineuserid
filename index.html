@@ -44,22 +44,22 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-regular fa-user text-blue-400 mr-3"></i>
-          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/\s/g, '')">
+          <input type="text" id="name" placeholder="ชื่อจริง" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^ก-๛]/g, '')">
         </div>
         <div class="input-pill">
           <i class="fa-regular fa-address-card text-blue-400 mr-3"></i>
-          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/\s/g, '')">
+          <input type="text" id="surname" placeholder="นามสกุล" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^ก-๛]/g, '')">
         </div>
       </div>
       
       <div class="grid grid-cols-2 gap-4">
         <div class="input-pill">
           <i class="fa-solid fa-user-tag text-blue-400 mr-3"></i>
-          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^A-Za-z0-9ก-๛]/g, '')">
+          <input type="text" id="username" placeholder="Username" required class="bg-transparent w-full outline-none text-sm" oninput="this.value = this.value.replace(/[^A-Za-z]/g, '')">
         </div>
         <div class="input-pill relative">
           <i class="fa-solid fa-key text-blue-400 mr-3"></i>
-          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm pr-6">
+          <input type="password" id="password" placeholder="รหัสผ่าน" required class="bg-transparent w-full outline-none text-sm pr-6" oninput="this.value = this.value.replace(/[^A-Za-z0-9]/g, '')">
           <i class="fa-solid fa-eye text-slate-400 absolute right-4 cursor-pointer hover:text-blue-500 transition-colors" id="togglePasswordBtn" onclick="togglePassword()"></i>
         </div>
       </div>
@@ -153,7 +153,6 @@
           if (isTargetCalendar) {
               window.location.replace("https://doacoop-it.github.io/meeting_calendar?uid=" + profile.userId);
           } else {
-              // 🔴 แก้ไขลิงก์: ชี้ไปที่เว็บ GitHub หน้า Dashboard หลัก
               window.location.replace("https://doacoop-it.github.io/app-website/?uid=" + profile.userId); 
           }
         } else {
@@ -213,7 +212,6 @@
             if (isTargetCalendar) {
                 window.location.replace("https://doacoop-it.github.io/meeting_calendar?uid=" + res.uid);
             } else {
-                // 🔴 แก้ไขลิงก์: ชี้ไปที่เว็บ GitHub หน้า Dashboard หลัก
                 window.location.replace("https://doacoop-it.github.io/app-website/?uid=" + res.uid);
             }
           });
